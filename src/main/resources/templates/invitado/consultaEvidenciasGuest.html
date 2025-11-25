@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Consulta de evidencias</title>
+        <link rel="shortcut icon" href="/img/icons/jagar.png" />
+        <link href="/css/app.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <div class="wrapper">
+            <div class="main w-100">
+                <nav class="navbar navbar-expand navbar-light navbar-bg">
+                    <div class="container-fluid">
+                        <a class="navbar-brand fw-bold" href="/invitado/evidencias">Semáforo Smart</a>
+                        <span class="text-muted small">Modo invitado</span>
+                    </div>
+                </nav>
+                <main class="content">
+                    <div class="container-fluid p-0">
+                        <div class="d-flex align-items-center mb-3">
+                            <h1 class="h3 mb-0 flex-grow-1">Consulta pública de evidencias</h1>
+                            <span class="badge bg-success">Invitado</span>
+                        </div>
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Buscar por placa</h5>
+                            </div>
+                            <div class="card-body">
+                                <form class="row gy-3 gx-3 align-items-end" method="get" th:action="@{/invitado/evidencias}">
+                                    <div class="col-sm-12 col-md-6">
+                                        <label class="form-label">Placa</label>
+                                        <input type="text" name="placa" class="form-control" placeholder="ABC123" th:value="${placa}" required>
+                                    </div>
+                                    <div class="col-sm-12 col-md-6 d-flex gap-2">
+                                        <button class="btn btn-primary" type="submit">Consultar</button>
+                                        <a class="btn btn-outline-secondary" href="/invitado/evidencias">Limpiar</a>
+                                    </div>
+                                </form>
+                                <p class="text-muted small mt-3">Consulta de solo una placa a la vez. Para filtros avanzados, ingrese como administrador.</p>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Resultados</h5>
+                            </div>
+                            <div class="card-body">
+                                <div th:if="${placa == null || placa.isBlank()}" class="text-muted">Ingrese una placa para iniciar la búsqueda.</div>
+                                <div th:if="${placa != null && !placa.isBlank() && #lists.isEmpty(infracciones)}" class="text-muted">No se encontraron evidencias para la placa indicada.</div>
+                                <div class="table-responsive" th:if="${!#lists.isEmpty(infracciones)}">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Fecha</th>
+                                                <th>Placa</th>
+                                                <th>Tipo</th>
+                                                <th>Sitio</th>
+                                                <th>Velocidad (km/h)</th>
+                                                <th>Imagen</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="inf : ${infracciones}">
+                                                <td th:text="${inf.createdat}"></td>
+                                                <td th:text="${inf.placa}"></td>
+                                                <td><span class="badge bg-warning text-dark" th:text="${inf.tipo}"></span></td>
+                                                <td th:text="${inf.sitio != null ? inf.sitio.nombre : 'N/D'}"></td>
+                                                <td th:text="${inf.velocidadkmh}"></td>
+                                                <td>
+                                                    <img th:if="${inf.fotoprocesada != null}" th:src="${inf.fotoprocesada}" class="img-fluid rounded" style="max-width: 110px" alt="Evidencia">
+                                                    <span th:if="${inf.fotoprocesada == null}" class="text-muted">Sin imagen</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+                <footer class="footer">
+                    <div class="container-fluid">
+                        <div class="row text-muted">
+                            <div class="col-12 text-start">
+                                <p class="mb-0">&copy; 2024 Semáforo Smart</p>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+        <script src="/js/app.js"></script>
+    </body>
+</html>

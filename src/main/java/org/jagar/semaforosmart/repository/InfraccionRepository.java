@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface InfraccionRepository extends JpaRepository<Infraccion,Integer> {
     List<Infraccion> findBySitio(Sitio sitio);
+    List<Infraccion> findAllByOrderByCreatedatDesc();
+    List<Infraccion> findByPlacaContainingIgnoreCaseOrderByCreatedatDesc(String placa);
 }
