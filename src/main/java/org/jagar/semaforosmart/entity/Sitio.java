@@ -11,7 +11,7 @@ import lombok.Setter;
 public class Sitio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     private String nombre;
     private String nombrecamara;

@@ -11,7 +11,7 @@ import lombok.Setter;
 public class OrdenControl {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "sitioid")

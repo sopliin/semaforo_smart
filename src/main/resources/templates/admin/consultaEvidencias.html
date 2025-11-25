@@ -63,8 +63,13 @@
                         <div class="col-sm-6 col-md-3">
                             <label class="form-label">Sitio</label>
                             <select class="form-select" name="sitioId">
-                                <option th:value="" th:selected="${sitioId == null}">Todos</option>
-                                <option th:each="sitio : ${sitios}" th:value="${sitio.id}" th:selected="${sitio.id == sitioId}" th:text="${sitio.nombre}"></option>
+                                <option th:value="1" th:selected="${sitioId == null}">Todos</option>
+                                <option
+                                        th:each="sitio : ${sitios}"
+                                        th:value="${sitio.id}"
+                                        th:selected="${sitio.id == sitioId}"
+                                        th:text="${sitio.nombre}">
+                                </option>
                             </select>
                         </div>
                         <div class="col-sm-12 col-md-6 d-flex gap-2">
@@ -80,8 +85,9 @@
                     <h5 class="card-title mb-0">Evidencias registradas</h5>
                 </div>
                 <div class="card-body">
-                    <div th:if="${#lists.isEmpty(infracciones)}" class="text-muted">No hay resultados para los filtros seleccionados.</div>
-                    <div class="table-responsive" th:if="${!#lists.isEmpty(infracciones)}">
+                    <div th:if="${errorCarga != null}" class="alert alert-danger" th:text="${errorCarga}"></div>
+                    <div th:if="${errorCarga == null && #lists.isEmpty(infracciones)}" class="text-muted">No hay resultados para los filtros seleccionados.</div>
+                    <div class="table-responsive" th:if="${errorCarga == null && !#lists.isEmpty(infracciones)}">
                         <table class="table table-striped">
                             <thead>
                                 <tr>

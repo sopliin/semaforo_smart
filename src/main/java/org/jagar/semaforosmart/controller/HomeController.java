@@ -34,8 +34,16 @@ public class HomeController {
             @RequestParam(required = false, name = "hasta") String fechaHasta,
             Model model
     ) {
-        List<Infraccion> infracciones = infraccionRepository.findAll();
-        List<Sitio> sitios = sitioRepository.findAll();
+        List<Infraccion> infracciones = new ArrayList<>();
+        List<Sitio> sitios = new ArrayList<>();
+        String errorCarga = null;
+
+        try {
+            infracciones = infraccionRepository.findAll();
+            sitios = sitioRepository.findAll();
+        } catch (Exception e) {
+            errorCarga = "No se pudieron obtener los datos desde la base de datos";
+        }
 
         LocalDate desde = parseFecha(fechaDesde);
         LocalDate hasta = parseFecha(fechaHasta);
@@ -55,6 +63,7 @@ public class HomeController {
         model.addAttribute("fechaDesde",  fechaDesde);
         model.addAttribute("fechaHasta",  fechaHasta);
         model.addAttribute("sitios",  sitios);
+        model.addAttribute("errorCarga", errorCarga);
         model.addAttribute("modo", "admin");
         return "admin/consultaEvidencias";
     }
@@ -62,13 +71,21 @@ public class HomeController {
     @GetMapping(value = "/invitado/evidencias")
     public String evidenciasInvitado(@RequestParam(required = false) String placa,
                                      Model model) {
-        List<Infraccion> infracciones = (placa == null || placa.isBlank())
-                ? List.of()
-                : infraccionRepository.findByPlacaContainingIgnoreCaseOrderByCreatedatDesc(placa);
+        List<Infraccion> infracciones = new ArrayList<>();
+        String errorCarga = null;
+
+        try {
+            if (placa != null && !placa.isBlank()) {
+                infracciones = infraccionRepository.findByPlacaContainingIgnoreCaseOrderByCreatedatDesc(placa);
+            }
+        } catch (Exception e) {
+            errorCarga = "No se pudieron obtener los datos desde la base de datos";
+        }
 
         model.addAttribute("infracciones", infracciones);
         model.addAttribute("placa", placa);
         model.addAttribute("modo", "invitado");
+        model.addAttribute("errorCarga", errorCarga);
         return "invitado/consultaEvidenciasGuest";
     }
 

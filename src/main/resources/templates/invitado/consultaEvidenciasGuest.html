@@ -48,9 +48,10 @@
                                 <h5 class="card-title mb-0">Resultados</h5>
                             </div>
                             <div class="card-body">
-                                <div th:if="${placa == null || placa.isBlank()}" class="text-muted">Ingrese una placa para iniciar la búsqueda.</div>
-                                <div th:if="${placa != null && !placa.isBlank() && #lists.isEmpty(infracciones)}" class="text-muted">No se encontraron evidencias para la placa indicada.</div>
-                                <div class="table-responsive" th:if="${!#lists.isEmpty(infracciones)}">
+                                <div th:if="${errorCarga != null}" class="alert alert-danger" th:text="${errorCarga}"></div>
+                                <div th:if="${errorCarga == null && (placa == null || placa.isBlank())}" class="text-muted">Ingrese una placa para iniciar la búsqueda.</div>
+                                <div th:if="${errorCarga == null && placa != null && !placa.isBlank() && #lists.isEmpty(infracciones)}" class="text-muted">No se encontraron evidencias para la placa indicada.</div>
+                                <div class="table-responsive" th:if="${errorCarga == null && !#lists.isEmpty(infracciones)}">
                                     <table class="table table-striped">
                                         <thead>
                                             <tr>
@@ -85,7 +86,7 @@
                     <div class="container-fluid">
                         <div class="row text-muted">
                             <div class="col-12 text-start">
-                                <p class="mb-0">&copy; 2024 Semáforo Smart</p>
+                                <p class="mb-0">&copy; 2025 Semáforo Smart</p>
                             </div>
                         </div>
                     </div>
