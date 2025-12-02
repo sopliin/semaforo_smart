@@ -7,26 +7,26 @@
         <meta name="description" content="Panel de administración - Consulta de evidencias">
         <meta name="author" content="Semáforo Smart">
         <title>Consulta de evidencias - Admin</title>
-        <link rel="shortcut icon" href="img/icons/jagar.png" />
-        <link rel="shortcut icon" href="img/icons/jagar.png" />
-        <link href="css/app.css" rel="stylesheet">
+        <link rel="shortcut icon" href="/img/icons/jagar.png" />
+        <link rel="shortcut icon" href="/img/icons/jagar.png" />
+        <link href="/css/app.css" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     </head>
     <body>
         <div class="wrapper">
             <nav id="sidebar" class="sidebar js-sidebar">
                 <div class="sidebar-content js-simplebar">
-                    <a class="sidebar-brand" href="/evidencias">
+                    <a class="sidebar-brand" href="/admin/evidencias">
                         <span class="align-middle">Semáforo Smart</span>
                     </a>
                     <ul class="sidebar-nav">
                         <li class="sidebar-item active">
-                            <a class="sidebar-link" href="/evidencias">
+                            <a class="sidebar-link" href="/admin/evidencias">
                                 <i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Evidencias</span>
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a class="sidebar-link" href="/gestion">
+                            <a class="sidebar-link" href="/admin/gestion">
                                 <i class="align-middle" data-feather="settings"></i> <span class="align-middle">Gestión Semafórica</span>
                             </a>
                         </li>
@@ -68,7 +68,7 @@
                                 </div>
                             </div>
                             <div class="card-body pt-3">
-                                <form class="row gy-3 gx-3 align-items-end" method="get" th:action="@{/evidencias}">
+                                <form class="row gy-3 gx-3 align-items-end" method="get" th:action="@{/admin/evidencias}">
                                     <div class="col-sm-6 col-lg-3">
                                         <label class="form-label">Fecha desde</label>
                                         <input type="date" name="desde" class="form-control" th:value="${fechaDesde}">
@@ -98,7 +98,7 @@
                                         </select>
                                     </div>
                                     <div class="col-sm-12 col-lg-9 d-flex gap-2 justify-content-end">
-                                        <a class="btn btn-outline-secondary" href="/evidencias">Limpiar</a>
+                                        <a class="btn btn-outline-secondary" href="/admin/evidencias">Limpiar</a>
                                         <button class="btn btn-primary" type="submit">Aplicar</button>
                                     </div>
                                 </form>
@@ -164,6 +164,6 @@
                 </footer>
             </div>
         </div>
-        <script src="js/app.js"></script>
+        <script src="/js/app.js"></script>
     </body>
 </html>
