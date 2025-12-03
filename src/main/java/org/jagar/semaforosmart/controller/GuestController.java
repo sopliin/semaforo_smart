@@ -2,6 +2,8 @@ package org.jagar.semaforosmart.controller;
 
 import org.jagar.semaforosmart.entity.Infraccion;
 import org.jagar.semaforosmart.repository.InfraccionRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +23,10 @@ public class GuestController {
 
     @GetMapping(value = "/evidencias")
     public String evidenciasInvitado(@RequestParam(required = false) String placa, Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated() && !(authentication.getPrincipal() instanceof String)) {
+            return "redirect:/admin/evidencias";
+        }
         List<Infraccion> infracciones = new ArrayList<>();
         String errorCarga = null;
 
