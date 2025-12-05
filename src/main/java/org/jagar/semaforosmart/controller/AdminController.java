@@ -69,7 +69,8 @@ public class AdminController {
     }
 
     @GetMapping(value = "/gestion")
-    public String gestion(){
+    public String gestion(Model model){
+        model.addAttribute("sitios", sitioRepository.findAll());
         return "admin/gestionSemaforica";
     }
 
