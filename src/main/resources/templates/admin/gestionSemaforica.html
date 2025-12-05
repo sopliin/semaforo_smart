@@ -30,13 +30,13 @@
             background: #0f0f0f;
         }
         .croquis-wrapper .via-vertical {
-            width: 90px;
+            width: 120px;
             height: 100%;
             left: 50%;
             transform: translateX(-50%);
         }
         .croquis-wrapper .via-horizontal {
-            height: 90px;
+            height: 120px;
             width: 100%;
             top: 50%;
             transform: translateY(-50%);
@@ -52,11 +52,11 @@
             z-index: 3;
         }
         .croquis-wrapper .pase-peatonal .franja {
-            background: #f6c850;
-            height: 32px;
-            width: 260px;
-            border-radius: 12px;
-            box-shadow: inset 0 0 0 6px #0f0f0f;
+            background: #ffffff;
+            height: 18px;
+            width: 120px;
+            border-radius: 8px;
+            box-shadow: inset 0 0 0 4px #0f0f0f;
         }
         .croquis-wrapper .linea-amarilla {
             position: absolute;
@@ -78,19 +78,23 @@
         }
         .semaforo-pin {
             position: absolute;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 5;
+        }
+        .semaforo-pin .btn-pin {
             border: none;
             background: #fff;
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.18);
-            padding: 10px 14px;
+            padding: 10px 12px;
             display: inline-flex;
             align-items: center;
-            gap: 10px;
             cursor: pointer;
-            z-index: 5;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        .semaforo-pin:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,0.22); }
+        .semaforo-pin .btn-pin:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,0.22); }
         .semaforo-pin .mini-semaforo {
             display: inline-flex;
             flex-direction: column;
@@ -106,13 +110,24 @@
             height: 18px;
             border-radius: 50%;
             border: 2px solid #111;
+            opacity: 0.35;
+            transition: opacity 0.2s ease, box-shadow 0.2s ease;
         }
+        .luz-activa { opacity: 1 !important; box-shadow: 0 0 0 3px rgba(17,17,17,0.2); }
         .semaforo-pin .mini-semaforo .vehicular-verde { background: #1fc77a; }
         .semaforo-pin .mini-semaforo .vehicular-amarillo { background: #f5c542; }
         .semaforo-pin .mini-semaforo .vehicular-rojo { background: #e65a5a; }
         .semaforo-pin .mini-semaforo .peatonal-blanco { background: #ffffff; }
         .semaforo-pin .mini-semaforo .peatonal-rojo { background: #d73749; }
-        .semaforo-pin .titulo-pin { font-weight: 600; margin: 0; }
+        .semaforo-pin .pin-label {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+            padding: 10px 12px;
+            pointer-events: none;
+            min-width: 180px;
+        }
+        .semaforo-pin .pin-label .titulo-pin { font-weight: 700; margin: 0; }
         .detalle-panel {
             position: absolute;
             right: 14px;
@@ -122,6 +137,7 @@
             z-index: 6;
         }
         .detalle-panel.hidden { display: none; }
+        .etiquetas-tiempo { gap: 8px; }
     </style>
 </head>
 <body>
@@ -131,10 +147,10 @@
                 <a class="sidebar-brand" href="/admin/evidencias">
                     <span class="align-middle">Semáforo Smart</span>
                 </a>
-                <ul>
+                <ul class="sidebar-nav">
                     <li class="sidebar-item">
                         <a class="sidebar-link" href="/admin/evidencias">
-                            <i class="align-middle" data-feather="sliders"></i><span class="align-middle">Evidencias</span>
+                            <i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Evidencias</span>
                         </a>
                     </li>
                     <li class="sidebar-item active">
@@ -165,6 +181,7 @@
             </div>
             </nav>
 
+            <main class="content">
             <div class="container-fluid p-0">
                 <div class="d-flex flex-wrap align-items-center justify-content-between mb-3">
                     <div>
@@ -191,6 +208,11 @@
                                 <span class="badge bg-primary" id="badge-resumen">Sincronizado</span>
                             </div>
                             <div class="card-body">
+                                <div class="d-flex flex-wrap etiquetas-tiempo mb-3">
+                                    <span class="badge bg-light text-dark border" id="label-ts">Sincronizando...</span>
+                                    <span class="badge bg-dark" id="label-vehiculos">Vehículos: 0</span>
+                                    <span class="badge bg-secondary" id="label-peatones">Peatones: 0</span>
+                                </div>
                                 <div class="croquis-wrapper">
                                     <div class="via-vertical"></div>
                                     <div class="via-horizontal"></div>
@@ -207,28 +229,32 @@
                                         <div class="franja"></div>
                                     </div>
 
-                                    <button class="semaforo-pin" style="top: 18%; left: 52%;" data-pin="vehicular">
-                                        <div class="mini-semaforo">
-                                            <span class="luz vehicular-rojo"></span>
-                                            <span class="luz vehicular-amarillo"></span>
-                                            <span class="luz vehicular-verde"></span>
-                                        </div>
-                                        <div>
+                                    <div class="semaforo-pin" style="top: 18%; left: 52%;" data-pin="vehicular">
+                                        <button class="btn-pin" type="button">
+                                            <div class="mini-semaforo">
+                                                <span class="luz vehicular-rojo" data-luz="vehicular-rojo"></span>
+                                                <span class="luz vehicular-amarillo" data-luz="vehicular-amarillo"></span>
+                                                <span class="luz vehicular-verde" data-luz="vehicular-verde"></span>
+                                            </div>
+                                        </button>
+                                        <div class="pin-label">
                                             <p class="titulo-pin mb-0">Vehicular</p>
                                             <small class="text-muted" id="vehicular-ubicacion">Orientación norte</small>
                                         </div>
-                                    </button>
+                                    </div>
 
-                                    <button class="semaforo-pin" style="bottom: 16%; right: 18%;" data-pin="peatonal">
-                                        <div class="mini-semaforo">
-                                            <span class="luz peatonal-rojo"></span>
-                                            <span class="luz peatonal-blanco"></span>
-                                        </div>
-                                        <div>
+                                    <div class="semaforo-pin" style="bottom: 16%; right: 18%;" data-pin="peatonal">
+                                        <button class="btn-pin" type="button">
+                                            <div class="mini-semaforo">
+                                                <span class="luz peatonal-rojo" data-luz="peatonal-rojo"></span>
+                                                <span class="luz peatonal-blanco" data-luz="peatonal-blanco"></span>
+                                            </div>
+                                        </button>
+                                        <div class="pin-label">
                                             <p class="titulo-pin mb-0">Peatonal</p>
                                             <small class="text-muted" id="peatonal-ubicacion">Paso central</small>
                                         </div>
-                                    </button>
+                                    </div>
 
                                     <div class="detalle-panel hidden" id="panel-detalle">
                                         <div class="card shadow-lg">
@@ -301,25 +327,27 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">Últimas acciones</h5>
-                            </div>
-                            <div class="card-body">
-                                <ul class="list-unstyled mb-0" id="lista-acciones">
-                                    <li class="text-muted">Sin cambios recientes</li>
-                                </ul>
-                            </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Últimas acciones</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled mb-0" id="lista-acciones">
+                                <li class="text-muted">Sin cambios recientes</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+            </main>
     </div>
+</div>
 
     <script>
         const panelDetalle = document.getElementById('panel-detalle');
         const pins = document.querySelectorAll('.semaforo-pin');
+        const botonesPin = document.querySelectorAll('.btn-pin');
         const selectorSitio = document.getElementById('sitio-select');
         const resumenSitio = document.getElementById('resumen-sitio');
         const badgeModo = document.getElementById('badge-modo');
@@ -335,8 +363,12 @@
         const totalSemaforos = document.getElementById('total-semaforos');
         const conteoAuto = document.getElementById('conteo-auto');
         const conteoManual = document.getElementById('conteo-manual');
+        const labelTs = document.getElementById('label-ts');
+        const labelVehiculos = document.getElementById('label-vehiculos');
+        const labelPeatones = document.getElementById('label-peatones');
         let semaforos = [];
         let semaforoActivo = null;
+        let intervaloEstado = null;
 
         const labels = {
             tipo: document.getElementById('detalle-tipo'),
@@ -368,6 +400,8 @@
                 actualizarConteoModo();
                 mapearPins();
                 actualizarResumenSitio();
+                await cargarDeteccion();
+                reiniciarIntervalo();
             } catch (e) {
                 badgeResumen.classList.remove('bg-primary');
                 badgeResumen.classList.add('bg-danger');
@@ -377,6 +411,13 @@
                 conteoAuto.textContent = '0';
                 conteoManual.textContent = '0';
             }
+        }
+
+        function reiniciarIntervalo() {
+            if (intervaloEstado) {
+                clearInterval(intervaloEstado);
+            }
+            intervaloEstado = setInterval(cargarDeteccion, 8000);
         }
 
         function actualizarConteoModo() {
@@ -466,8 +507,9 @@
             });
         }
 
-        pins.forEach(pin => {
-            pin.addEventListener('click', () => {
+        botonesPin.forEach(boton => {
+            boton.addEventListener('click', () => {
+                const pin = boton.closest('.semaforo-pin');
                 const id = Number(pin.dataset.semaforoId);
                 if (Number.isNaN(id)) {
                     return;
@@ -475,6 +517,52 @@
                 mostrarDetalle(id);
             });
         });
+
+        async function cargarDeteccion() {
+            const sitioId = selectorSitio && selectorSitio.value ? selectorSitio.value : null;
+            const query = sitioId ? `?sitioId=${sitioId}` : '';
+            try {
+                const resp = await fetch(`/admin/api/detecciones/ultimo${query}`);
+                if (!resp.ok) {
+                    throw new Error('Sin datos');
+                }
+                const data = await resp.json();
+                labelTs.textContent = data.ts ? `Actualizado: ${data.ts}` : 'Sincronizando...';
+                labelVehiculos.textContent = `Vehículos: ${data.numvehiculos ?? 0}`;
+                labelPeatones.textContent = `Peatones: ${data.numpeatones ?? 0}`;
+                resaltarLuz(data.coloractual);
+            } catch (e) {
+                labelTs.textContent = 'Sin datos en vivo';
+                labelVehiculos.textContent = 'Vehículos: --';
+                labelPeatones.textContent = 'Peatones: --';
+                resaltarLuz(null);
+            }
+        }
+
+        function resaltarLuz(colorActual) {
+            document.querySelectorAll('.luz').forEach(luz => luz.classList.remove('luz-activa'));
+            const color = (colorActual || '').toLowerCase();
+            if (color.includes('rojo')) {
+                activarLuz('vehicular-rojo');
+                activarLuz('peatonal-blanco');
+            } else if (color.includes('amarillo')) {
+                activarLuz('vehicular-amarillo');
+                activarLuz('peatonal-rojo');
+            } else if (color.includes('verde')) {
+                activarLuz('vehicular-verde');
+                activarLuz('peatonal-rojo');
+            } else if (color.includes('peatonal')) {
+                activarLuz('peatonal-blanco');
+                activarLuz('vehicular-rojo');
+            }
+        }
+
+        function activarLuz(nombre) {
+            const luz = document.querySelector(`[data-luz="${nombre}"]`);
+            if (luz) {
+                luz.classList.add('luz-activa');
+            }
+        }
 
         document.getElementById('form-tiempos').addEventListener('submit', guardarCambios);
 
