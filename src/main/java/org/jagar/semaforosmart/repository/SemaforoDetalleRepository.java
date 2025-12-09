@@ -6,6 +6,7 @@ import org.jagar.semaforosmart.model.SemaforoDetalle;
 import org.jagar.semaforosmart.model.SemaforoTipo;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -74,7 +75,7 @@ public class SemaforoDetalleRepository {
         cfg.setSegverde((short) verde);
         cfg.setSegciclo((short) (rojo + amarillo + verde));
         cfg.setIsactive(true);
-        cfg.setSpeedlimitkmh(velocidadLimiteKmh);
+        cfg.setSpeedlimitkmh(velocidadLimiteKmh != null ? velocidadLimiteKmh : BigDecimal.ZERO);
 
         ConfiguracionSemaforica guardado = configuracionRepository.save(cfg);
         return Optional.of(mapear(guardado));
