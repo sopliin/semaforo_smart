@@ -58,21 +58,21 @@ public class SemaforoDetalleRepository {
 
     public Optional<SemaforoDetalle> crearConfiguracion(Long sitioId, String nombre, int rojo, int amarillo, int verde,
                                                         java.math.BigDecimal velocidadLimiteKmh) {
-        Sitio sitio = null;
-        if (sitioId != null) {
-            sitio = sitioRepository.findById(sitioId).orElse(null);
-            if (sitio == null) {
-                return Optional.empty();
-            }
+        Sitio sitio = sitioId != null
+                ? sitioRepository.findById(sitioId).orElse(null)
+                : sitioRepository.findTopByOrderByIdDesc().orElse(null);
+
+        if (sitio == null) {
+            return Optional.empty();
         }
 
         ConfiguracionSemaforica cfg = new ConfiguracionSemaforica();
         cfg.setSitio(sitio);
-        cfg.setNombre((nombre == null || nombre.isBlank()) ? "Configuración vehicular" : nombre);
+        cfg.setNombre((nombre == null || nombre.isBlank()) ? null : nombre.trim());
         cfg.setSegrojo((short) rojo);
         cfg.setSegambar((short) amarillo);
         cfg.setSegverde((short) verde);
-//        cfg.setSegciclo((short) (rojo + amarillo + verde));
+        cfg.setSegciclo((short) (rojo + amarillo + verde));
         cfg.setIsactive(true);
         cfg.setSpeedlimitkmh(velocidadLimiteKmh);
 

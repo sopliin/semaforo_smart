@@ -50,9 +50,6 @@ public class GestionSemaforoController {
         if (request == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Solicitud vacía");
         }
-        if (request.sitioId() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Debes seleccionar un sitio");
-        }
         if (request.rojo() == null || request.amarillo() == null || request.verde() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Completa los tiempos vehiculares");
         }
@@ -67,7 +64,7 @@ public class GestionSemaforoController {
                         request.amarillo(),
                         request.verde(),
                         request.speedLimitKmh())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sitio no encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sitio no encontrado para registrar la configuración"));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(creado);
     }
