@@ -2,6 +2,7 @@ package org.jagar.semaforosmart.controller;
 
 import org.jagar.semaforosmart.model.SemaforoDetalle;
 import org.jagar.semaforosmart.repository.SemaforoDetalleRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -57,16 +58,31 @@ public class GestionSemaforoController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Los tiempos no pueden ser negativos");
         }
 
-        SemaforoDetalle creado = semaforoDetalleRepository.crearConfiguracion(
-                        request.sitioId(),
-                        request.nombre(),
-                        request.rojo(),
-                        request.amarillo(),
-                        request.verde(),
-                        request.speedLimitKmh())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sitio no encontrado para registrar la configuración"));
+        BigDecimal speed = request.speedLimitKmh();
+        if (speed != null && BigDecimal.ZERO.compareTo(speed) == 0) {
+            speed = null;
+        }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(creado);
+        try {
+            SemaforoDetalle creado = semaforoDetalleRepository.crearConfiguracion(
+                            request.sitioId(),
+                            request.nombre(),
+                            request.rojo(),
+                            request.amarillo(),
+                            request.verde(),
+                            speed)
+                    .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.NOT_FOUND,
+                            "Sitio no encontrado para registrar la configuración"));
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(creado);
+
+        } catch (DataIntegrityViolationException ex) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Error al guardar la configuración: " + ex.getMostSpecificCause().getMessage(),
+                    ex);
+        }
     }
 
     private void validar(TiemposRequest request) {

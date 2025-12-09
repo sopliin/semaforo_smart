@@ -2,6 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="utf-8">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="Panel de gestión semafórica">
@@ -452,6 +454,11 @@
         const alertaConfigError = document.getElementById('alerta-config-error');
         const btnCerrarVentanaConfig = document.getElementById('cerrar-ventana-config');
         const btnCancelarConfig = document.getElementById('cancelar-config');
+        const csrfTokenMeta = document.querySelector('meta[name="_csrf"]');
+        const csrfHeaderMeta = document.querySelector('meta[name="_csrf_header"]');
+        const csrfToken = csrfTokenMeta ? csrfTokenMeta.getAttribute('content') : null;
+        const csrfHeaderName = csrfHeaderMeta ? csrfHeaderMeta.getAttribute('content') : null;
+
         let semaforos = [];
         let semaforoActivo = null;
         let intervaloEstado = null;
@@ -623,36 +630,63 @@
         async function guardarConfiguracionNueva(event) {
             event.preventDefault();
             limpiarAlertasConfig();
+
             const sitioId = selectorSitio && selectorSitio.value ? Number(selectorSitio.value) : null;
             if (!sitioId) {
+                alertaConfigError.textContent = 'Selecciona un sitio antes de guardar.';
                 alertaConfigError.classList.remove('d-none');
                 return;
             }
+
+            const nombreLimpio = (inputNombreConfig.value || '').trim();
+            const rojo = Number(inputRojoConfig.value);
+            const amarillo = Number(inputAmbarConfig.value);
+            const verde = Number(inputVerdeConfig.value);
+            const speedVal = inputSpeedConfig.value === '' ? null : Number(inputSpeedConfig.value);
+
             const payload = {
                 sitioId,
-                nombre: inputNombreConfig.value,
-                rojo: Number(inputRojoConfig.value),
-                amarillo: Number(inputAmbarConfig.value),
-                verde: Number(inputVerdeConfig.value),
-                speedLimitKmh: Number(inputSpeedConfig.value)
+                rojo,
+                amarillo,
+                verde,
+                speedLimitKmh: speedVal
             };
+            if (nombreLimpio !== '') {
+                payload.nombre = nombreLimpio;  // nombre opcional
+            }
+
+            // Headers con CSRF
+            const headers = { 'Content-Type': 'application/json' };
+            if (csrfToken && csrfHeaderName) {
+                headers[csrfHeaderName] = csrfToken; // por ej. X-CSRF-TOKEN
+            }
+
             try {
                 const resp = await fetch('/admin/api/semaforos', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    headers,
+                    body: JSON.stringify(payload),
+                    credentials: 'same-origin'
                 });
+
+                const text = await resp.text(); // por si hay error, ver mensaje
+
                 if (!resp.ok) {
-                    throw new Error('No se pudo guardar');
+                    console.error('Error al guardar configuración:', resp.status, text);
+                    throw new Error('No se pudo guardar la configuración');
                 }
-                await resp.json();
+
                 alertaConfigExito.classList.remove('d-none');
+                alertaConfigError.classList.add('d-none');
                 await cargarDatos();
                 setTimeout(cerrarVentanaConfig, 1200);
             } catch (e) {
+                alertaConfigError.textContent = e.message || 'No se pudo guardar la configuración.';
                 alertaConfigError.classList.remove('d-none');
             }
         }
+
+
 
         function registrarAccion(semaforo) {
             const item = document.createElement('li');

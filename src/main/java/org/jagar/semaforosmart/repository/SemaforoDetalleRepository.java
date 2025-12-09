@@ -73,9 +73,12 @@ public class SemaforoDetalleRepository {
         cfg.setSegrojo((short) rojo);
         cfg.setSegambar((short) amarillo);
         cfg.setSegverde((short) verde);
-        cfg.setSegciclo((short) (rojo + amarillo + verde));
         cfg.setIsactive(true);
-        cfg.setSpeedlimitkmh(velocidadLimiteKmh != null ? velocidadLimiteKmh : BigDecimal.ZERO);
+        if (velocidadLimiteKmh != null) {
+            cfg.setSpeedlimitkmh(velocidadLimiteKmh);
+        } else {
+            cfg.setSpeedlimitkmh(null);
+        }
 
         ConfiguracionSemaforica guardado = configuracionRepository.save(cfg);
         return Optional.of(mapear(guardado));
@@ -85,7 +88,12 @@ public class SemaforoDetalleRepository {
         Sitio sitio = configuracion.getSitio();
         SemaforoDetalle detalle = new SemaforoDetalle();
         detalle.setId(configuracion.getId());
-        detalle.setNombre(configuracion.getNombre());
+        String nombreCfg = configuracion.getNombre();
+        if (nombreCfg == null || nombreCfg.isBlank()) {
+            nombreCfg = "Configuración semafórica";
+        }
+        detalle.setNombre(nombreCfg);
+
 //        detalle.setDescripcion(Optional.ofNullable(configuracion.getNombre()).orElse("Configuración Semafórica"));
 //        detalle.setUbicacion(sitio != null ? "Configuracion asociada al sitio "+ sitio.getNombre() : "Configuración Semafórica");
         detalle.setTipo(deducirTipo(configuracion.getNombre()));
