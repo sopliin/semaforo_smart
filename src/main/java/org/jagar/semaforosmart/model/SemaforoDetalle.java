@@ -6,7 +6,7 @@ public class SemaforoDetalle {
     private SemaforoTipo tipo;
     private String ubicacion;
     private String descripcion;
-    private boolean modoAutomatico;
+    private boolean modoPrioridad;
     private int tiempoRojo;
     private int tiempoAmarillo;
     private int tiempoVerde;
@@ -16,13 +16,13 @@ public class SemaforoDetalle {
     }
 
     public SemaforoDetalle(Long id, String nombre, SemaforoTipo tipo, String ubicacion, String descripcion,
-                           boolean modoAutomatico, int tiempoRojo, int tiempoAmarillo, int tiempoVerde, int tiempoPeatonal) {
+                           boolean modoPrioridad, int tiempoRojo, int tiempoAmarillo, int tiempoVerde, int tiempoPeatonal) {
         this.id = id;
         this.nombre = nombre;
         this.tipo = tipo;
         this.ubicacion = ubicacion;
         this.descripcion = descripcion;
-        this.modoAutomatico = modoAutomatico;
+        this.modoPrioridad = modoPrioridad;
         this.tiempoRojo = tiempoRojo;
         this.tiempoAmarillo = tiempoAmarillo;
         this.tiempoVerde = tiempoVerde;
@@ -69,12 +69,12 @@ public class SemaforoDetalle {
         this.descripcion = descripcion;
     }
 
-    public boolean isModoAutomatico() {
-        return modoAutomatico;
+    public boolean isModoPrioridad() {
+        return modoPrioridad;
     }
 
-    public void setModoAutomatico(boolean modoAutomatico) {
-        this.modoAutomatico = modoAutomatico;
+    public void setModoPrioridad(boolean modoPrioridad) {
+        this.modoPrioridad = modoPrioridad;
     }
 
     public int getTiempoRojo() {

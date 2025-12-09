@@ -18,17 +18,6 @@ public class Sitio {
     @Column(nullable = false, length = 50)
     private String nombre;
 
-    @Column(length = 100)
-    private String ubicacion;
-
-    @Column(length = 50)
-    private String ciudad;
-
-    private Integer prioridad;
-
-    @Column(length = 12)
-    private String simbolo;
-
     @Column(length = 20)
     private String modooperacion;
 

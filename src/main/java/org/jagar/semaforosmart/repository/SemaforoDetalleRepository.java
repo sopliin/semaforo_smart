@@ -40,17 +40,15 @@ public class SemaforoDetalleRepository {
         return  configuracionRepository.findById(id).map(this::mapear);
     }
 
-    public Optional<SemaforoDetalle> updateTiempos(Integer id, int rojo, int amarillo, int verde, int peatonal, boolean modoAutomatico) {
+    public Optional<SemaforoDetalle> updateTiempos(Integer id, int rojo, int amarillo, int verde, int peatonal, boolean modoPrioridad) {
         return configuracionRepository.findById(Long.valueOf(id)).map(cfg -> {
             cfg.setSegrojo((short) rojo);
             cfg.setSegambar((short) amarillo);
             cfg.setSegverde((short) verde);
-            cfg.setSegpeatonal((short) peatonal);
             cfg.setSegciclo((short) (rojo + amarillo + verde + peatonal));
-            cfg.setModo(modoAutomatico ? "AUTOMATICO" : "MANUAL");
             Sitio sitio = cfg.getSitio();
             if (sitio != null) {
-                sitio.setModooperacion(modoAutomatico ? "AUTOMATICO" : "MANUAL");
+                sitio.setModooperacion(modoPrioridad ? "PRIORITY" : "DEFAULT");
                 sitioRepository.save(sitio);
             }
             ConfiguracionSemaforica guardado = configuracionRepository.save(cfg);
@@ -63,13 +61,10 @@ public class SemaforoDetalleRepository {
         SemaforoDetalle detalle = new SemaforoDetalle();
         detalle.setId(configuracion.getId());
         detalle.setNombre(configuracion.getNombre());
-        detalle.setTipo(deducirTipo(configuracion.getTiposemaforo()));
         detalle.setUbicacion(sitio != null ? "Configuracion asociada al sitio "+ sitio.getNombre() : "Configuración Semafórica");
-        detalle.setModoAutomatico(sitio == null || "AUTOMATICO".equalsIgnoreCase(sitio.getModooperacion()));
         detalle.setTiempoRojo(Optional.ofNullable(configuracion.getSegrojo()).orElse((short) 0));
         detalle.setTiempoAmarillo(Optional.ofNullable(configuracion.getSegambar()).orElse((short) 0));
         detalle.setTiempoVerde(Optional.ofNullable(configuracion.getSegverde()).orElse((short) 0));
-        detalle.setTiempoPeatonal(Optional.ofNullable(configuracion.getSegpeatonal()).orElse((short) 0));
         return detalle;
     }
 

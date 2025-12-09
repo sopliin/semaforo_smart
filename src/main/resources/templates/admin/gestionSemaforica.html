@@ -318,12 +318,12 @@
                                     <strong id="total-semaforos">0</strong>
                                 </div>
                                 <div class="d-flex align-items-center justify-content-between mb-2">
-                                    <span class="text-muted">Modo automático</span>
-                                    <span class="badge bg-success" id="conteo-auto">0</span>
+                                    <span class="text-muted">Modo prioridad</span>
+                                    <span class="badge bg-success" id="conteo-prioridad">0</span>
                                 </div>
                                 <div class="d-flex align-items-center justify-content-between">
-                                    <span class="text-muted">Modo manual</span>
-                                    <span class="badge bg-secondary" id="conteo-manual">0</span>
+                                    <span class="text-muted">Modo default</span>
+                                    <span class="badge bg-secondary" id="conteo-default">0</span>
                                 </div>
                             </div>
                         </div>
@@ -361,8 +361,8 @@
         const inputPeatonal = document.getElementById('input-peatonal');
         const switchModo = document.getElementById('switch-modo');
         const totalSemaforos = document.getElementById('total-semaforos');
-        const conteoAuto = document.getElementById('conteo-auto');
-        const conteoManual = document.getElementById('conteo-manual');
+        const conteoPrioridad = document.getElementById('conteo-prioridad');
+        const conteoDefault = document.getElementById('conteo-default');
         const labelTs = document.getElementById('label-ts');
         const labelVehiculos = document.getElementById('label-vehiculos');
         const labelPeatones = document.getElementById('label-peatones');
@@ -408,8 +408,8 @@
                 badgeResumen.textContent = 'Sin conexión';
                 semaforos = [];
                 totalSemaforos.textContent = '0';
-                conteoAuto.textContent = '0';
-                conteoManual.textContent = '0';
+                conteoPrioridad.textContent = '0';
+                conteoDefault.textContent = '0';
             }
         }
 
@@ -421,10 +421,10 @@
         }
 
         function actualizarConteoModo() {
-            const automaticos = semaforos.filter(s => s.modoAutomatico).length;
-            const manuales = semaforos.length - automaticos;
-            conteoAuto.textContent = automaticos;
-            conteoManual.textContent = manuales;
+            const prioridad = semaforos.filter(s => s.modoPrioridad).length;
+            const porDefecto = semaforos.length - prioridad;
+            conteoPrioridad.textContent = prioridad;
+            conteoDefault.textContent = porDefecto;
         }
 
         function mostrarDetalle(id) {
@@ -436,13 +436,13 @@
             labels.ubicacion.textContent = semaforo.ubicacion;
             labels.descripcion.textContent = semaforo.descripcion;
             labels.ciclo.textContent = semaforo.tiempoRojo + semaforo.tiempoAmarillo + semaforo.tiempoVerde + semaforo.tiempoPeatonal;
-            badgeModo.textContent = semaforo.modoAutomatico ? 'Automático' : 'Manual';
-            badgeModo.className = 'badge ' + (semaforo.modoAutomatico ? 'bg-success' : 'bg-warning text-dark');
+            badgeModo.textContent = semaforo.modoPrioridad ? 'Prioridad' : 'Default';
+            badgeModo.className = 'badge ' + (semaforo.modoPrioridad ? 'bg-success' : 'bg-warning text-dark');
             inputRojo.value = semaforo.tiempoRojo;
             inputAmarillo.value = semaforo.tiempoAmarillo;
             inputVerde.value = semaforo.tiempoVerde;
             inputPeatonal.value = semaforo.tiempoPeatonal;
-            switchModo.checked = !!semaforo.modoAutomatico;
+            switchModo.checked = !!semaforo.modoPrioridad;
             alertaExito.classList.add('d-none');
             alertaError.classList.add('d-none');
             panelDetalle.classList.remove('hidden');
@@ -456,7 +456,7 @@
                 amarillo: Number(inputAmarillo.value),
                 verde: Number(inputVerde.value),
                 peatonal: Number(inputPeatonal.value),
-                modoAutomatico: switchModo.checked
+                modoPrioridad: switchModo.checked
             };
             try {
                 const resp = await fetch(`/admin/api/semaforos/${semaforoActivo.id}`, {

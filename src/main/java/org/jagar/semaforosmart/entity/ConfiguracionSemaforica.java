@@ -22,32 +22,12 @@ public class ConfiguracionSemaforica {
 
     private String nombre;
 
-    @Column(name = "tiposemaforo")
-    private String tiposemaforo;
-
-    private String modo;
-
     private Short segverde;
     private Short segambar;
     private Short segrojo;
-    private Short segpeatonal;
+//    private Short segpeatonal;
     private Short segciclo;
 
     private BigDecimal speedlimitkmh;
-    private BigDecimal maxvelocidadkmh;
-    private BigDecimal minvelocidadkmh;
 
-    private BigDecimal segvinmin;
-    private BigDecimal segvinmax;
-    private BigDecimal segwinmin;
-    private BigDecimal segwinmax;
-
-    @Column(name = "createdat")
-    private LocalDateTime createdat;
-
-    @Column(name = "isactive")
-    private boolean active;
-
-    @Column(name = "sacarins")
-    private boolean sacarins;
 }

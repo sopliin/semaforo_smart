@@ -35,12 +35,12 @@ public class GestionSemaforoController {
     public SemaforoDetalle actualizar(@PathVariable Long id, @RequestBody TiemposRequest request){
         validar(request);
         return semaforoDetalleRepository.updateTiempos(
-                        Math.toIntExact(id),
+               Math.toIntExact(id),
                 request.rojo(),
                 request.amarillo(),
                 request.verde(),
                 request.peatonal(),
-                request.modoAutomatico())
+                request.modoPrioridad())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Semáforo no encontrado"));
     }
 
@@ -54,12 +54,12 @@ public class GestionSemaforoController {
         if (request.rojo() < 0 || request.amarillo() < 0 || request.verde() < 0 || request.peatonal() < 0){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Los tiempos no pueden ser negativos");
         }
-        if (request.modoAutomatico() == null) {
+        if (request.modoPrioridad() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Indica el modo de operación");
         }
     }
 
-    public record TiemposRequest(Integer rojo, Integer amarillo, Integer verde, Integer peatonal, Boolean modoAutomatico) {
+    public record TiemposRequest(Integer rojo, Integer amarillo, Integer verde, Integer peatonal, Boolean modoPrioridad) {
 
     }
 }
