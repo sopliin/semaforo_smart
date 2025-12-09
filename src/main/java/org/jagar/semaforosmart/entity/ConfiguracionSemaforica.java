@@ -25,9 +25,8 @@ public class ConfiguracionSemaforica {
     private Short segverde;
     private Short segambar;
     private Short segrojo;
-//    private Short segpeatonal;
     private Short segciclo;
 
     private BigDecimal speedlimitkmh;
-
+    private boolean isactive;
 }

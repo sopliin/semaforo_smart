@@ -72,7 +72,8 @@ public class SemaforoDetalleRepository {
         cfg.setSegrojo((short) rojo);
         cfg.setSegambar((short) amarillo);
         cfg.setSegverde((short) verde);
-        cfg.setSegciclo((short) (rojo + amarillo + verde));
+//        cfg.setSegciclo((short) (rojo + amarillo + verde));
+        cfg.setIsactive(true);
         cfg.setSpeedlimitkmh(velocidadLimiteKmh);
 
         ConfiguracionSemaforica guardado = configuracionRepository.save(cfg);
@@ -84,8 +85,8 @@ public class SemaforoDetalleRepository {
         SemaforoDetalle detalle = new SemaforoDetalle();
         detalle.setId(configuracion.getId());
         detalle.setNombre(configuracion.getNombre());
-        detalle.setDescripcion(Optional.ofNullable(configuracion.getNombre()).orElse("Configuración Semafórica"));
-        detalle.setUbicacion(sitio != null ? "Configuracion asociada al sitio "+ sitio.getNombre() : "Configuración Semafórica");
+//        detalle.setDescripcion(Optional.ofNullable(configuracion.getNombre()).orElse("Configuración Semafórica"));
+//        detalle.setUbicacion(sitio != null ? "Configuracion asociada al sitio "+ sitio.getNombre() : "Configuración Semafórica");
         detalle.setTipo(deducirTipo(configuracion.getNombre()));
         detalle.setTiempoRojo(Optional.ofNullable(configuracion.getSegrojo()).orElse((short) 0));
         detalle.setTiempoAmarillo(Optional.ofNullable(configuracion.getSegambar()).orElse((short) 0));
