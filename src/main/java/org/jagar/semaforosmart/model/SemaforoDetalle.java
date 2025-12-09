@@ -11,6 +11,7 @@ public class SemaforoDetalle {
     private int tiempoAmarillo;
     private int tiempoVerde;
     private int tiempoPeatonal;
+    private java.math.BigDecimal velocidadLimiteKmh;
 
     public SemaforoDetalle() {
     }
@@ -111,5 +112,13 @@ public class SemaforoDetalle {
 
     public int getDuracionTotal() {
         return tiempoRojo + tiempoAmarillo + tiempoVerde + tiempoPeatonal;
+    }
+
+    public java.math.BigDecimal getVelocidadLimiteKmh() {
+        return velocidadLimiteKmh;
+    }
+
+    public void setVelocidadLimiteKmh(java.math.BigDecimal velocidadLimiteKmh) {
+        this.velocidadLimiteKmh = velocidadLimiteKmh;
     }
 }

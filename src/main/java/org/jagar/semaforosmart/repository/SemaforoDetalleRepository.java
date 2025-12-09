@@ -56,15 +56,41 @@ public class SemaforoDetalleRepository {
         });
     }
 
+    public Optional<SemaforoDetalle> crearConfiguracion(Long sitioId, String nombre, int rojo, int amarillo, int verde,
+                                                        java.math.BigDecimal velocidadLimiteKmh) {
+        Sitio sitio = null;
+        if (sitioId != null) {
+            sitio = sitioRepository.findById(sitioId).orElse(null);
+            if (sitio == null) {
+                return Optional.empty();
+            }
+        }
+
+        ConfiguracionSemaforica cfg = new ConfiguracionSemaforica();
+        cfg.setSitio(sitio);
+        cfg.setNombre((nombre == null || nombre.isBlank()) ? "Configuración vehicular" : nombre);
+        cfg.setSegrojo((short) rojo);
+        cfg.setSegambar((short) amarillo);
+        cfg.setSegverde((short) verde);
+        cfg.setSegciclo((short) (rojo + amarillo + verde));
+        cfg.setSpeedlimitkmh(velocidadLimiteKmh);
+
+        ConfiguracionSemaforica guardado = configuracionRepository.save(cfg);
+        return Optional.of(mapear(guardado));
+    }
+
     private SemaforoDetalle mapear(ConfiguracionSemaforica configuracion){
         Sitio sitio = configuracion.getSitio();
         SemaforoDetalle detalle = new SemaforoDetalle();
         detalle.setId(configuracion.getId());
         detalle.setNombre(configuracion.getNombre());
+        detalle.setDescripcion(Optional.ofNullable(configuracion.getNombre()).orElse("Configuración Semafórica"));
         detalle.setUbicacion(sitio != null ? "Configuracion asociada al sitio "+ sitio.getNombre() : "Configuración Semafórica");
+        detalle.setTipo(deducirTipo(configuracion.getNombre()));
         detalle.setTiempoRojo(Optional.ofNullable(configuracion.getSegrojo()).orElse((short) 0));
         detalle.setTiempoAmarillo(Optional.ofNullable(configuracion.getSegambar()).orElse((short) 0));
         detalle.setTiempoVerde(Optional.ofNullable(configuracion.getSegverde()).orElse((short) 0));
+        detalle.setVelocidadLimiteKmh(configuracion.getSpeedlimitkmh());
         return detalle;
     }
 

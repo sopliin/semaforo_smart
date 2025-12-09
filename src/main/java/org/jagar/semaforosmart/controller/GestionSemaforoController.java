@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -44,6 +45,33 @@ public class GestionSemaforoController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Semáforo no encontrado"));
     }
 
+    @PostMapping
+    public ResponseEntity<SemaforoDetalle> crear(@RequestBody NuevaConfiguracionRequest request){
+        if (request == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Solicitud vacía");
+        }
+        if (request.sitioId() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Debes seleccionar un sitio");
+        }
+        if (request.rojo() == null || request.amarillo() == null || request.verde() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Completa los tiempos vehiculares");
+        }
+        if (request.rojo() < 0 || request.amarillo() < 0 || request.verde() < 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Los tiempos no pueden ser negativos");
+        }
+
+        SemaforoDetalle creado = semaforoDetalleRepository.crearConfiguracion(
+                        request.sitioId(),
+                        request.nombre(),
+                        request.rojo(),
+                        request.amarillo(),
+                        request.verde(),
+                        request.speedLimitKmh())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sitio no encontrado"));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(creado);
+    }
+
     private void validar(TiemposRequest request) {
         if(request == null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se recibieron datos para actualizar");
@@ -61,5 +89,9 @@ public class GestionSemaforoController {
 
     public record TiemposRequest(Integer rojo, Integer amarillo, Integer verde, Integer peatonal, Boolean modoPrioridad) {
 
+    }
+
+    public record NuevaConfiguracionRequest(Long sitioId, String nombre, Integer rojo, Integer amarillo,
+                                            Integer verde, BigDecimal speedLimitKmh) {
     }
 }
