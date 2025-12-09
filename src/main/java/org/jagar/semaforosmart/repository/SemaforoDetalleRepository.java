@@ -23,7 +23,7 @@ public class SemaforoDetalleRepository {
         this.sitioRepository = sitioRepository;
     }
 
-    public List<SemaforoDetalle> findAll(Integer sitioId) {
+    public List<SemaforoDetalle> findAll(Long sitioId) {
         List<ConfiguracionSemaforica> configuraciones = sitioId == null
                 ? configuracionRepository.findAll()
                 : sitioRepository.findById(sitioId)
@@ -32,23 +32,25 @@ public class SemaforoDetalleRepository {
 
         return configuraciones.stream()
                 .map(this::mapear)
-                .sorted(Comparator.comparingInt(SemaforoDetalle::getId))
+                .sorted(Comparator.comparingLong(SemaforoDetalle::getId))
                 .toList();
     }
 
-    public Optional<SemaforoDetalle> findById(Integer id) {
+    public Optional<SemaforoDetalle> findById(Long id) {
         return  configuracionRepository.findById(id).map(this::mapear);
     }
 
     public Optional<SemaforoDetalle> updateTiempos(Integer id, int rojo, int amarillo, int verde, int peatonal, boolean modoAutomatico) {
-        return configuracionRepository.findById(id).map(cfg -> {
-            cfg.setSegrojo(rojo);
-            cfg.setSegambar(amarillo);
-            cfg.setSegverde(verde);
-            cfg.setSegciclo(peatonal);
+        return configuracionRepository.findById(Long.valueOf(id)).map(cfg -> {
+            cfg.setSegrojo((short) rojo);
+            cfg.setSegambar((short) amarillo);
+            cfg.setSegverde((short) verde);
+            cfg.setSegpeatonal((short) peatonal);
+            cfg.setSegciclo((short) (rojo + amarillo + verde + peatonal));
+            cfg.setModo(modoAutomatico ? "AUTOMATICO" : "MANUAL");
             Sitio sitio = cfg.getSitio();
             if (sitio != null) {
-                sitio.setModooperacion(modoAutomatico ? "AUTO" : "MANUAL");
+                sitio.setModooperacion(modoAutomatico ? "AUTOMATICO" : "MANUAL");
                 sitioRepository.save(sitio);
             }
             ConfiguracionSemaforica guardado = configuracionRepository.save(cfg);
@@ -61,21 +63,21 @@ public class SemaforoDetalleRepository {
         SemaforoDetalle detalle = new SemaforoDetalle();
         detalle.setId(configuracion.getId());
         detalle.setNombre(configuracion.getNombre());
-        detalle.setTipo(deducirTipo(configuracion.getNombre()));
+        detalle.setTipo(deducirTipo(configuracion.getTiposemaforo()));
         detalle.setUbicacion(sitio != null ? "Configuracion asociada al sitio "+ sitio.getNombre() : "Configuración Semafórica");
-        detalle.setModoAutomatico(sitio == null || "AUTO".equals(sitio.getModooperacion()));
-        detalle.setTiempoRojo(Optional.ofNullable(configuracion.getSegrojo()).orElse(0));
-        detalle.setTiempoAmarillo(Optional.ofNullable(configuracion.getSegambar()).orElse(0));
-        detalle.setTiempoVerde(Optional.ofNullable(configuracion.getSegverde()).orElse(0));
-        detalle.setTiempoPeatonal(Optional.ofNullable(configuracion.getSegciclo()).orElse(0));
+        detalle.setModoAutomatico(sitio == null || "AUTOMATICO".equalsIgnoreCase(sitio.getModooperacion()));
+        detalle.setTiempoRojo(Optional.ofNullable(configuracion.getSegrojo()).orElse((short) 0));
+        detalle.setTiempoAmarillo(Optional.ofNullable(configuracion.getSegambar()).orElse((short) 0));
+        detalle.setTiempoVerde(Optional.ofNullable(configuracion.getSegverde()).orElse((short) 0));
+        detalle.setTiempoPeatonal(Optional.ofNullable(configuracion.getSegpeatonal()).orElse((short) 0));
         return detalle;
     }
 
-    private SemaforoTipo deducirTipo(String nombre){
-        if (nombre == null) {
+    private SemaforoTipo deducirTipo(String tipo){
+        if (tipo == null) {
             return SemaforoTipo.VEHICULAR;
         }
-        String lower = nombre.toLowerCase(Locale.ROOT);
+        String lower = tipo.toLowerCase(Locale.ROOT);
         if (lower.contains("peaton")){
             return SemaforoTipo.PEATONAL;
         }

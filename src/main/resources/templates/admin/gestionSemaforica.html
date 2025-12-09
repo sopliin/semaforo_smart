@@ -117,7 +117,7 @@
         .semaforo-pin .mini-semaforo .vehicular-verde { background: #1fc77a; }
         .semaforo-pin .mini-semaforo .vehicular-amarillo { background: #f5c542; }
         .semaforo-pin .mini-semaforo .vehicular-rojo { background: #e65a5a; }
-        .semaforo-pin .mini-semaforo .peatonal-blanco { background: #ffffff; }
+        .semaforo-pin .mini-semaforo .peatonal-verde { background: #1fc77a; }
         .semaforo-pin .mini-semaforo .peatonal-rojo { background: #d73749; }
         .semaforo-pin .pin-label {
             background: #fff;
@@ -247,7 +247,7 @@
                                         <button class="btn-pin" type="button">
                                             <div class="mini-semaforo">
                                                 <span class="luz peatonal-rojo" data-luz="peatonal-rojo"></span>
-                                                <span class="luz peatonal-blanco" data-luz="peatonal-blanco"></span>
+                                                <span class="luz peatonal-verde" data-luz="peatonal-verde"></span>
                                             </div>
                                         </button>
                                         <div class="pin-label">
@@ -541,19 +541,33 @@
 
         function resaltarLuz(colorActual) {
             document.querySelectorAll('.luz').forEach(luz => luz.classList.remove('luz-activa'));
-            const color = (colorActual || '').toLowerCase();
-            if (color.includes('rojo')) {
+            const colorNormalizado = (colorActual || '')
+                .toString()
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '');
+
+            const esRojo = colorNormalizado.includes('rojo') || colorNormalizado.includes('red');
+            const esAmbar = colorNormalizado.includes('ambar') || colorNormalizado.includes('amarillo') || colorNormalizado.includes('yellow');
+            const esVerde = colorNormalizado.includes('verde') || colorNormalizado.includes('green');
+            const esPeatonal = colorNormalizado.includes('peatonal');
+
+            if (esRojo) {
                 activarLuz('vehicular-rojo');
-                activarLuz('peatonal-blanco');
-            } else if (color.includes('amarillo')) {
+            } else if (esAmbar) {
                 activarLuz('vehicular-amarillo');
-                activarLuz('peatonal-rojo');
-            } else if (color.includes('verde')) {
+            } else if (esVerde) {
                 activarLuz('vehicular-verde');
+            }
+
+            const peatonalEnVerde = esPeatonal || esRojo;
+            if (peatonalEnVerde) {
+                activarLuz('peatonal-verde');
+                if (!esRojo) {
+                    activarLuz('vehicular-rojo');
+                }
+            } else {
                 activarLuz('peatonal-rojo');
-            } else if (color.includes('peatonal')) {
-                activarLuz('peatonal-blanco');
-                activarLuz('vehicular-rojo');
             }
         }
 

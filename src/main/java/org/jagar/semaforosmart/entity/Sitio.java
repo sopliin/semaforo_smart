@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "sitios")
 @Getter
@@ -11,12 +13,28 @@ import lombok.Setter;
 public class Sitio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
+    @Column(nullable = false, length = 50)
     private String nombre;
-    private String nombrecamara;
-    private String rtspurl;
+
+    @Column(length = 100)
+    private String ubicacion;
+
+    @Column(length = 50)
+    private String ciudad;
+
+    private Integer prioridad;
+
+    @Column(length = 12)
+    private String simbolo;
+
+    @Column(length = 20)
     private String modooperacion;
-    private boolean isactive;
-    private String createdat;
+
+    @Column(name = "isactive")
+    private boolean active;
+
+    @Column(name = "createdat")
+    private LocalDateTime createdat;
 }

@@ -139,11 +139,11 @@
                                                 <td class="text-center" th:text="${inf.velocidadkmh}"></td>
                                                 <td class="text-center" th:text="${inf.lightstate}"></td>
                                                 <td class="text-center">
-                                                    <img th:if="${inf.fotoprocesada != null}" th:src="${inf.fotoprocesada}" class="img-fluid rounded shadow-sm" style="max-width: 110px" alt="Evidencia">
-                                                    <span th:if="${inf.fotoprocesada == null}" class="text-muted">Sin imagen</span>
+                                                    <img th:if="${inf.fotoprocesada != null and !inf.fotoprocesada.isEmpty()}" th:src="${inf.fotoprocesada}" class="img-fluid rounded shadow-sm" style="max-width: 110px" alt="Evidencia">
+                                                    <span th:if="${inf.fotoprocesada == null || inf.fotoprocesada.isEmpty()}" class="text-muted">Sin imagen</span>
                                                 </td>
                                                 <td class="text-end">
-                                                    <a class="btn btn-sm btn-outline-primary" th:href="${inf.fotoprocesada}" target="_blank" th:if="${inf.fotoprocesada != null}">Descargar</a>
+                                                    <a class="btn btn-sm btn-outline-primary" th:href="${inf.fotoprocesada}" target="_blank" th:if="${inf.fotoprocesada != null && !inf.fotoprocesada.isEmpty()}">Descargar</a>
                                                 </td>
                                             </tr>
                                         </tbody>

@@ -1,7 +1,7 @@
 package org.jagar.semaforosmart.model;
 
 public class SemaforoDetalle {
-    private Integer id;
+    private Long id;
     private String nombre;
     private SemaforoTipo tipo;
     private String ubicacion;
@@ -15,7 +15,7 @@ public class SemaforoDetalle {
     public SemaforoDetalle() {
     }
 
-    public SemaforoDetalle(Integer id, String nombre, SemaforoTipo tipo, String ubicacion, String descripcion,
+    public SemaforoDetalle(Long id, String nombre, SemaforoTipo tipo, String ubicacion, String descripcion,
                            boolean modoAutomatico, int tiempoRojo, int tiempoAmarillo, int tiempoVerde, int tiempoPeatonal) {
         this.id = id;
         this.nombre = nombre;
@@ -29,11 +29,11 @@ public class SemaforoDetalle {
         this.tiempoPeatonal = tiempoPeatonal;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

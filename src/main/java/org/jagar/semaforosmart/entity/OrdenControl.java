@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "ordenesdecontrol")
 @Getter
@@ -11,7 +13,7 @@ import lombok.Setter;
 public class OrdenControl {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "sitioid")
@@ -21,9 +23,15 @@ public class OrdenControl {
     @JoinColumn(name = "requestedby")
     private Usuario usuario;
 
-    private String requestedat;
+    @Column(name = "requestedat")
+    private LocalDateTime requestedat;
+
     private String tipo;
+
     private String parametros;
+
     private String estado;
-    private String executedat;
+
+    @Column(name = "executedat")
+    private LocalDateTime executedat;
 }

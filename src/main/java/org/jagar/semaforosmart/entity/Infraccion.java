@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "infracciones")
 @Getter
@@ -11,17 +14,26 @@ import lombok.Setter;
 public class Infraccion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "sitioid")
     private Sitio sitio;
 
-    private String ts;
+    @Column(name = "ts")
+    private LocalDateTime ts;
+
     private String tipo;
+
     private String lightstate;
-    private Double velocidadkmh;
+
+    private BigDecimal velocidadkmh;
+
     private String placa;
+
+    @Column(name = "fotoprocesada")
     private String fotoprocesada;
-    private String createdat;
+
+    @Column(name = "createdat")
+    private LocalDateTime createdat;
 }

@@ -74,8 +74,8 @@
                                                 <td th:text="${inf.sitio != null ? inf.sitio.nombre : 'N/D'}"></td>
                                                 <td th:text="${inf.velocidadkmh}"></td>
                                                 <td>
-                                                    <img th:if="${inf.fotoprocesada != null}" th:src="${inf.fotoprocesada}" class="img-fluid rounded" style="max-width: 110px" alt="Evidencia">
-                                                    <span th:if="${inf.fotoprocesada == null}" class="text-muted">Sin imagen</span>
+                                                    <img th:if="${inf.fotoprocesada != null and !inf.fotoprocesada.isEmpty()}" th:src="${inf.fotoprocesada}" class="img-fluid rounded" style="max-width: 110px" alt="Evidencia">
+                                                    <span th:if="${inf.fotoprocesada == null || inf.fotoprocesada.isEmpty()}" class="text-muted">Sin imagen</span>
                                                 </td>
                                             </tr>
                                         </tbody>

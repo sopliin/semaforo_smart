@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface ConfiguracionSemaforicaRepository extends JpaRepository<ConfiguracionSemaforica,Integer> {
+public interface ConfiguracionSemaforicaRepository extends JpaRepository<ConfiguracionSemaforica,Long> {
     List<ConfiguracionSemaforica> findBySitio(Sitio sitio);
 }

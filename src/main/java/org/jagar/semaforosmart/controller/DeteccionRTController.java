@@ -21,7 +21,7 @@ public class DeteccionRTController {
     }
 
     @GetMapping("/ultimo")
-    public ResponseEntity<DeteccionActualResponse> obtenerUltimo(@RequestParam(required = false) Integer sitioId) {
+    public ResponseEntity<DeteccionActualResponse> obtenerUltimo(@RequestParam(required = false) Long sitioId) {
         Optional<DeteccionRT> ultimo = sitioId != null
                 ? deteccionRTRepository.findTopBySitio_IdOrderByIdDesc(sitioId)
                 : deteccionRTRepository.findTopByOrderByIdDesc();
@@ -37,7 +37,7 @@ public class DeteccionRTController {
                 .orElseGet(() -> ResponseEntity.noContent().build());
     }
 
-    public record DeteccionActualResponse(String ts, Integer numvehiculos, Integer numpeatones, String coloractual,
-                                          Integer segrestante) {
+    public record DeteccionActualResponse(java.time.LocalDateTime ts, Integer numvehiculos, Integer numpeatones, String coloractual,
+                                          Short segrestante) {
     }
 }

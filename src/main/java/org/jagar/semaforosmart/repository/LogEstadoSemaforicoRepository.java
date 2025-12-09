@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface LogEstadoSemaforicoRepository extends JpaRepository<LogEstadoSemaforico,Integer> {
+public interface LogEstadoSemaforicoRepository extends JpaRepository<LogEstadoSemaforico,Long> {
     List<LogEstadoSemaforico> findBySitio(Sitio sitio);
 }

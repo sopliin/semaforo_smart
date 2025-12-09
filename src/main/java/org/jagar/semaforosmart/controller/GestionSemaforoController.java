@@ -20,22 +20,22 @@ public class GestionSemaforoController {
     }
 
     @GetMapping
-    public List<SemaforoDetalle> listar(@RequestParam(required = false) Integer sitioId) {
+    public List<SemaforoDetalle> listar(@RequestParam(required = false) Long sitioId) {
         return semaforoDetalleRepository.findAll(sitioId);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SemaforoDetalle> obtener(@PathVariable Integer id){
+    public ResponseEntity<SemaforoDetalle> obtener(@PathVariable Long id){
         return semaforoDetalleRepository.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
-    public SemaforoDetalle actualizar(@PathVariable Integer id, @RequestBody TiemposRequest request){
+    public SemaforoDetalle actualizar(@PathVariable Long id, @RequestBody TiemposRequest request){
         validar(request);
         return semaforoDetalleRepository.updateTiempos(
-                id,
+                        Math.toIntExact(id),
                 request.rojo(),
                 request.amarillo(),
                 request.verde(),

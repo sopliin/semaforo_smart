@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface InfraccionRepository extends JpaRepository<Infraccion,Integer> {
+public interface InfraccionRepository extends JpaRepository<Infraccion,Long> {
     List<Infraccion> findBySitio(Sitio sitio);
     List<Infraccion> findAllByOrderByCreatedatDesc();
     List<Infraccion> findByPlacaContainingIgnoreCaseOrderByCreatedatDesc(String placa);

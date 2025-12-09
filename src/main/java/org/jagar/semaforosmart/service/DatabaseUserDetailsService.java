@@ -24,7 +24,7 @@ public class DatabaseUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findByUsernameAndIsenabledTrue(username)
+        Usuario usuario = usuarioRepository.findByUsernameAndEnabledTrue(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado o deshabilitado"));
 
         Collection<? extends GrantedAuthority> authorities = Collections.singletonList(
@@ -34,7 +34,7 @@ public class DatabaseUserDetailsService implements UserDetailsService {
         return new User(
                 usuario.getUsername(),
                 usuario.getPasswordhash(),
-                usuario.isIsenabled(),
+                usuario.isEnabled(),
                 true,
                 true,
                 true,
