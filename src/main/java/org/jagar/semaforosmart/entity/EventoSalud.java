@@ -7,10 +7,10 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "deteccionestiemporeal")
+@Table(name = "eventossalud")
 @Getter
 @Setter
-public class DeteccionRT {
+public class EventoSalud {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,16 +19,22 @@ public class DeteccionRT {
     @JoinColumn(name = "semaforoid")
     private Semaforo semaforo;
 
-    @Column(name = "ts")
-    private LocalDateTime ts;
+    @Column(name = "tsevento")
+    private LocalDateTime tsevento;
 
-    private Integer numvehiculos;
-    private Integer numpeatones;
+    @Column(length = 20)
+    private String categoria;
 
-    private String coloractual;
+    @Column(length = 30)
+    private String canal;
 
-    private Short segrestante;
+    @Column(length = 20)
+    private String estado;
+
+    @Column(length = 20)
+    private String origen;
 
     @Column(name = "detalle_json", columnDefinition = "json")
     private String detalleJson;
+
 }

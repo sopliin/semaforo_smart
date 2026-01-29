@@ -16,8 +16,8 @@ public class OrdenControl {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "sitioid")
-    private Sitio sitio;
+    @JoinColumn(name = "semaforoid")
+    private Semaforo semaforo;
 
     @ManyToOne
     @JoinColumn(name = "requestedby")
@@ -28,10 +28,13 @@ public class OrdenControl {
 
     private String tipo;
 
-    private String parametros;
+    @Column(name = "parametros_json", columnDefinition = "json")
+    private String parametrosJson;
 
     private String estado;
 
     @Column(name = "executedat")
     private LocalDateTime executedat;
+
+    private String resultado;
 }

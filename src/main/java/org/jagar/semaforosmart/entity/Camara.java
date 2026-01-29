@@ -4,32 +4,29 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "configuracionessemaforicas")
+@Table(name = "camaras")
 @Getter
 @Setter
-public class ConfiguracionSemaforica {
+public class Camara {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "semaforoid")
-    private Semaforo semaforo;
+    @JoinColumn(name = "sitioid")
+    private Sitio sitio;
 
+    @Column(nullable = false, length = 80)
     private String nombre;
 
-    private Short segverde;
-    private Short segambar;
-    private Short segrojo;
-
-    private BigDecimal speedlimitkmh;
+    @Column(name = "rtspurl", length = 512)
+    private String rtspurl;
 
     @Column(name = "isactive")
-    private boolean isActive;
+    private boolean isactive;
 
     @Column(name = "createdat")
     private LocalDateTime createdat;

@@ -23,7 +23,7 @@ public class DeteccionRTController {
     @GetMapping("/ultimo")
     public ResponseEntity<DeteccionActualResponse> obtenerUltimo(@RequestParam(required = false) Long sitioId) {
         Optional<DeteccionRT> ultimo = sitioId != null
-                ? deteccionRTRepository.findTopBySitio_IdOrderByIdDesc(sitioId)
+                ? deteccionRTRepository.findTopBySemaforo_Sitio_IdOrderByDesc(sitioId)
                 : deteccionRTRepository.findTopByOrderByIdDesc();
 
         return ultimo

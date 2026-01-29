@@ -4,14 +4,13 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "infracciones")
+@Table(name = "evidencias")
 @Getter
 @Setter
-public class Infraccion {
+public class Evidencia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,16 +22,23 @@ public class Infraccion {
     @Column(name = "ts")
     private LocalDateTime ts;
 
+    @Column(length = 20)
     private String tipo;
 
-    private String lightstate;
+    @Column(name = "referencia_id")
+    private Long referenciaId;
 
-    private BigDecimal velocidadkmh;
+    @Column(name = "storage_provider", length = 20)
+    private String storageProvider;
 
-    private String placa;
+    @Column(length = 1024)
+    private String url;
 
-    @Column(name = "fotoprocesada")
-    private String fotoprocesada;
+    @Column(length = 120)
+    private String mime;
+
+    @Column(length = 64)
+    private String sha256;
 
     @Column(name = "createdat")
     private LocalDateTime createdat;

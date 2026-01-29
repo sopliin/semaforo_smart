@@ -1,6 +1,7 @@
 package org.jagar.semaforosmart.repository;
 
 import org.jagar.semaforosmart.entity.ConfiguracionSemaforica;
+import org.jagar.semaforosmart.entity.Semaforo;
 import org.jagar.semaforosmart.entity.Sitio;
 import org.jagar.semaforosmart.model.SemaforoDetalle;
 import org.jagar.semaforosmart.model.SemaforoTipo;
@@ -16,20 +17,18 @@ import java.util.Optional;
 public class SemaforoDetalleRepository {
 
     private final ConfiguracionSemaforicaRepository configuracionRepository;
-    private final SitioRepository sitioRepository;
+    private final SemaforoRepository semaforoRepository;
 
     public SemaforoDetalleRepository(ConfiguracionSemaforicaRepository configuracionRepository,
-                                     SitioRepository sitioRepository) {
+                                     SemaforoRepository semaforoRepository) {
         this.configuracionRepository = configuracionRepository;
-        this.sitioRepository = sitioRepository;
+        this.semaforoRepository = semaforoRepository;
     }
 
     public List<SemaforoDetalle> findAll(Long sitioId) {
         List<ConfiguracionSemaforica> configuraciones = sitioId == null
                 ? configuracionRepository.findAll()
-                : sitioRepository.findById(sitioId)
-                .map(configuracionRepository::findBySitio)
-                .orElse(List.of());
+                : configuracionRepository.findBySemaforo_Sitio_Id(sitioId);
 
         return configuraciones.stream()
                 .map(this::mapear)
@@ -46,11 +45,10 @@ public class SemaforoDetalleRepository {
             cfg.setSegrojo((short) rojo);
             cfg.setSegambar((short) amarillo);
             cfg.setSegverde((short) verde);
-            cfg.setSegciclo((short) (rojo + amarillo + verde + peatonal));
-            Sitio sitio = cfg.getSitio();
-            if (sitio != null) {
-                sitio.setModooperacion(modoPrioridad ? "PRIORITY" : "DEFAULT");
-                sitioRepository.save(sitio);
+            Semaforo semaforo = cfg.getSemaforo();
+            if (semaforo != null) {
+                semaforo.setModooperacion(modoPrioridad ? "PRIORITY" : "DEFAULT");
+                semaforoRepository.save(semaforo);
             }
             ConfiguracionSemaforica guardado = configuracionRepository.save(cfg);
             return mapear(guardado);
@@ -59,21 +57,19 @@ public class SemaforoDetalleRepository {
 
     public Optional<SemaforoDetalle> crearConfiguracion(Long sitioId, String nombre, int rojo, int amarillo, int verde,
                                                         java.math.BigDecimal velocidadLimiteKmh) {
-        Sitio sitio = sitioId != null
-                ? sitioRepository.findById(sitioId).orElse(null)
-                : sitioRepository.findTopByOrderByIdDesc().orElse(null);
+        Semaforo semaforo = resolveSemaforo(sitioId);
 
-        if (sitio == null) {
+        if (semaforo == null) {
             return Optional.empty();
         }
 
         ConfiguracionSemaforica cfg = new ConfiguracionSemaforica();
-        cfg.setSitio(sitio);
+        cfg.setSemaforo(semaforo);
         cfg.setNombre((nombre == null || nombre.isBlank()) ? null : nombre.trim());
         cfg.setSegrojo((short) rojo);
         cfg.setSegambar((short) amarillo);
         cfg.setSegverde((short) verde);
-        cfg.setIsactive(true);
+        cfg.setActive(true);
         if (velocidadLimiteKmh != null) {
             cfg.setSpeedlimitkmh(velocidadLimiteKmh);
         } else {
@@ -85,7 +81,7 @@ public class SemaforoDetalleRepository {
     }
 
     private SemaforoDetalle mapear(ConfiguracionSemaforica configuracion){
-        Sitio sitio = configuracion.getSitio();
+        Semaforo semaforo = configuracion.getSemaforo();
         SemaforoDetalle detalle = new SemaforoDetalle();
         detalle.setId(configuracion.getId());
         String nombreCfg = configuracion.getNombre();
@@ -94,14 +90,19 @@ public class SemaforoDetalleRepository {
         }
         detalle.setNombre(nombreCfg);
 
-//        detalle.setDescripcion(Optional.ofNullable(configuracion.getNombre()).orElse("Configuración Semafórica"));
-//        detalle.setUbicacion(sitio != null ? "Configuracion asociada al sitio "+ sitio.getNombre() : "Configuración Semafórica");
-        detalle.setTipo(deducirTipo(configuracion.getNombre()));
+        detalle.setTipo(deducirTipo(semaforo != null ? semaforo.getTipo() : configuracion.getNombre()));
         detalle.setTiempoRojo(Optional.ofNullable(configuracion.getSegrojo()).orElse((short) 0));
         detalle.setTiempoAmarillo(Optional.ofNullable(configuracion.getSegambar()).orElse((short) 0));
         detalle.setTiempoVerde(Optional.ofNullable(configuracion.getSegverde()).orElse((short) 0));
         detalle.setVelocidadLimiteKmh(configuracion.getSpeedlimitkmh());
         return detalle;
+    }
+
+    private Semaforo resolveSemaforo(Long sitioId) {
+        if (sitioId == null) {
+            return semaforoRepository.findAll().stream().findFirst().orElse(null);
+        }
+        return semaforoRepository.findBySitio_Id(sitioId).stream().findFirst().orElse(null);
     }
 
     private SemaforoTipo deducirTipo(String tipo){

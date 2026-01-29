@@ -1,6 +1,7 @@
 package org.jagar.semaforosmart.controller;
 
 import org.jagar.semaforosmart.entity.Infraccion;
+import org.jagar.semaforosmart.entity.Semaforo;
 import org.jagar.semaforosmart.entity.Sitio;
 import org.jagar.semaforosmart.repository.InfraccionRepository;
 import org.jagar.semaforosmart.repository.SitioRepository;
@@ -95,7 +96,8 @@ public class AdminController {
         if (sitioId == null){
             return true;
         }
-        return Optional.ofNullable(infraccion.getSitio())
+        return Optional.ofNullable(infraccion.getSemaforo())
+                .map(Semaforo::getSitio)
                 .map(Sitio::getId)
                 .map(id -> Objects.equals(id, sitioId))
                 .orElse(false);

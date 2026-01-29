@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.stream.Collectors;
 
 @Service
 public class DatabaseUserDetailsService implements UserDetailsService {
@@ -27,8 +27,9 @@ public class DatabaseUserDetailsService implements UserDetailsService {
         Usuario usuario = usuarioRepository.findByUsernameAndEnabledTrue(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado o deshabilitado"));
 
-        Collection<? extends GrantedAuthority> authorities = Collections.singletonList(
-                new SimpleGrantedAuthority("ROLE_" + usuario.getRol().toUpperCase())
+        Collection<? extends GrantedAuthority> authorities = usuario.getRoles().stream()
+                .map(rol -> new SimpleGrantedAuthority(rol.getNombre()))
+                .collect(Collectors.toSet()
         );
 
         return new User(
