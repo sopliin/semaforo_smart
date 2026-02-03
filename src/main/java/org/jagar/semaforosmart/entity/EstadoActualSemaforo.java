@@ -26,7 +26,7 @@ public class EstadoActualSemaforo {
     @JoinColumn(name = "configid")
     private ConfiguracionSemaforica configuracion;
 
-    @Column(length = "20")
+    @Column(length = 20)
     private String modooperacion;
 
     @Column(length = 20)
