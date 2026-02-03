@@ -68,7 +68,7 @@
                                         </thead>
                                         <tbody>
                                             <tr th:each="inf : ${infracciones}">
-                                                <td th:text="${inf.createdat}"></td>
+                                                <td th:text="${inf.createdat != null ? #temporals.format(inf.createdat, 'dd-MM-yyyy HH:mm:ss') : '-'}"></td>
                                                 <td th:text="${inf.placa}"></td>
                                                 <td><span class="badge bg-warning text-dark" th:text="${inf.tipo}"></span></td>
                                                 <td th:text="${inf.sitio != null ? inf.sitio.nombre : 'N/D'}"></td>

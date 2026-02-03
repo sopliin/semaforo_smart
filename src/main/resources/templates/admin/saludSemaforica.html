@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Panel de administración - Salud del semáforo">
+    <meta name="author" content="Semáforo Smart">
+    <title>Salud del semáforo - Admin</title>
+    <link rel="shortcut icon" href="/img/icons/jagar.png" />
+    <link href="/css/app.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            display: inline-block;
+            margin-right: 6px;
+        }
+        .status-dot.ok { background: #1fc77a; }
+        .status-dot.warn { background: #f5c542; }
+        .status-dot.down { background: #e65a5a; }
+        .chip {
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <nav id="sidebar" class="sidebar js-sidebar">
+        <div class="sidebar-content js-simplebar">
+            <a class="sidebar-brand" href="/admin/evidencias">
+                <span class="align-middle">Semáforo Smart</span>
+            </a>
+            <ul class="sidebar-nav">
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="/admin/evidencias">
+                        <i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Evidencias</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="/admin/gestion">
+                        <i class="align-middle" data-feather="settings"></i> <span class="align-middle">Gestión Semafórica</span>
+                    </a>
+                </li>
+                <li class="sidebar-item active">
+                    <a class="sidebar-link" href="/admin/salud">
+                        <i class="align-middle" data-feather="activity"></i> <span class="align-middle">Salud del Semáforo</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main">
+        <nav class="navbar navbar-expand navbar-light navbar-bg">
+            <a class="sidebar-toggle js-sidebar-toggle">
+                <i class="hamburger align-self-center"></i>
+            </a>
+            <div class="navbar-collapse collapse">
+                <div class="ms-auto d-flex align-items-center gap-3">
+                    <span class="d-flex align-items-center text-muted small">
+                        <i class="align-middle" data-feather="activity"></i>
+                        <span class="ms-2">Administración</span>
+                    </span>
+                    <form th:action="@{/logout}" method="post" class="mb-0">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button type="submit" class="btn btn-outline-danger btn-sm">Cerrar sesión</button>
+                    </form>
+                </div>
+            </div>
+        </nav>
+
+        <main class="content">
+            <div class="container-fluid p-0">
+                <div class="d-flex align-items-center mb-4">
+                    <div>
+                        <h1 class="h3 mb-1">Salud del semáforo</h1>
+                        <div class="text-muted">Consulta el estado actual y los eventos registrados por sitio.</div>
+                    </div>
+                    <span class="badge bg-primary ms-auto">Panel Admin</span>
+                </div>
+
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header border-bottom-0 pb-0">
+                        <h5 class="card-title mb-0">Filtros</h5>
+                        <small class="text-muted">Selecciona un sitio y semáforo para filtrar eventos.</small>
+                    </div>
+                    <div class="card-body pt-3">
+                        <form class="row gy-3 gx-3 align-items-end" method="get" th:action="@{/admin/salud}" id="form-filtros-salud">
+                            <div class="col-sm-6 col-lg-4">
+                                <label class="form-label">Sitio</label>
+                                <select class="form-select" name="sitioId" id="sitio-select-salud">
+                                    <option value="" th:selected="${sitioId == null}">Todos</option>
+                                    <option th:each="sitio : ${sitios}"
+                                            th:value="${sitio.id}"
+                                            th:selected="${sitio.id == sitioId}"
+                                            th:text="${sitio.nombre}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-sm-6 col-lg-4">
+                                <label class="form-label">Semáforo</label>
+                                <select class="form-select" name="semaforoId" id="semaforo-select-salud">
+                                    <option value="" th:selected="${semaforoId == null}">Todos</option>
+                                    <option th:each="semaforo : ${semaforos}"
+                                            th:value="${semaforo.id}"
+                                            th:selected="${semaforo.id == semaforoId}"
+                                            th:text="${semaforo.nombre}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-sm-12 col-lg-4 d-flex gap-2 justify-content-end">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title mb-1">Eventos registrados</h5>
+                                <h2 class="mb-0" th:text="${totalEventos}">0</h2>
+                                <small class="text-muted">Últimos eventos del filtro</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title mb-1">Dispositivos en línea</h5>
+                                <h2 class="mb-0" th:text="${dispositivosOk}">0</h2>
+                                <small class="text-muted">Jetson y ESP32 disponibles</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title mb-1">Con fallas</h5>
+                                <h2 class="mb-0" th:text="${dispositivosConFalla}">0</h2>
+                                <small class="text-muted">Se requiere atención</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title mb-1">Último evento</h5>
+                                <h6 class="mb-0"
+                                    th:text="${ultimoEvento != null ? #temporals.format(ultimoEvento, 'dd-MM-yyyy HH:mm:ss') : 'Sin registros'}">Sin registros</h6>
+                                <small class="text-muted">Marca temporal del evento más reciente</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header border-bottom-0 pb-0">
+                        <h5 class="card-title mb-0">Estado actual por semáforo</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(saludActuales)}" class="text-muted">
+                            No hay datos de salud disponibles para el filtro seleccionado.
+                        </div>
+                        <div class="table-responsive" th:if="${!#lists.isEmpty(saludActuales)}">
+                            <table class="table table-striped align-middle">
+                                <thead class="table-light">
+                                <tr>
+                                    <th>Semáforo</th>
+                                    <th>Sitio</th>
+                                    <th>Jetson</th>
+                                    <th>ESP32</th>
+                                    <th>Última actualización</th>
+                                    <th>Observaciones</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="salud : ${saludActuales}">
+                                    <td class="fw-semibold" th:text="${salud.semaforo != null ? salud.semaforo.nombre : 'N/D'}"></td>
+                                    <td th:text="${salud.semaforo != null && salud.semaforo.sitio != null ? salud.semaforo.sitio.nombre : 'N/D'}"></td>
+                                    <td>
+                                        <span th:class="${salud.jetsonOnline ? 'badge bg-success' : 'badge bg-danger'}"
+                                              th:text="${salud.jetsonOnline ? 'Online' : 'Offline'}">
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span th:class="${salud.esp32Online ? 'badge bg-success' : 'badge bg-danger'}"
+                                              th:text="${salud.esp32Online ? 'Online' : 'Offline'}">
+                                        </span>
+                                    </td>
+                                    <td th:text="${salud.tsUpdate != null ? #temporals.format(salud.tsUpdate, 'dd-MM-yyyy HH:mm:ss') : 'Sin actualizar'}"></td>
+                                    <td th:text="${salud.observaciones != null ? salud.observaciones : '-'}"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-header border-bottom-0 pb-0">
+                        <h5 class="card-title mb-0">Eventos de salud</h5>
+                        <small class="text-muted">Histórico de cambios y alertas por semáforo.</small>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(eventos)}" class="text-muted">
+                            No hay eventos de salud registrados para el filtro seleccionado.
+                        </div>
+                        <div class="table-responsive" th:if="${!#lists.isEmpty(eventos)}">
+                            <table class="table table-striped align-middle">
+                                <thead class="table-light">
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Semáforo</th>
+                                    <th>Sitio</th>
+                                    <th>Categoría</th>
+                                    <th>Canal</th>
+                                    <th>Estado</th>
+                                    <th>Origen</th>
+                                    <th>Detalle</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="evento : ${eventos}">
+                                    <td class="text-nowrap"
+                                        th:text="${evento.tsevento != null ? #temporals.format(evento.tsevento, 'dd-MM-yyyy HH:mm:ss') : '-'}"></td>
+                                    <td th:text="${evento.semaforo != null ? evento.semaforo.nombre : 'N/D'}"></td>
+                                    <td th:text="${evento.semaforo != null && evento.semaforo.sitio != null ? evento.semaforo.sitio.nombre : 'N/D'}"></td>
+                                    <td><span class="badge bg-info text-dark" th:text="${evento.categoria}"></span></td>
+                                    <td th:text="${evento.canal}"></td>
+                                    <td>
+                                        <span th:class="${evento.estado != null && evento.estado.toLowerCase().contains('ok') ? 'badge bg-success' : 'badge bg-warning text-dark'}"
+                                              th:text="${evento.estado != null ? evento.estado : 'N/D'}"></span>
+                                    </td>
+                                    <td th:text="${evento.origen != null ? evento.origen : 'N/D'}"></td>
+                                    <td class="text-truncate" style="max-width: 220px;"
+                                        th:text="${evento.detalleJson != null ? evento.detalleJson : '-'}"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer mt-4">
+            <div class="container-fluid">
+                <div class="row text-muted align-items-center">
+                    <div class="col-12 col-md-6 text-start">
+                        <p class="mb-0">&copy; 2025 Semáforo Smart</p>
+                    </div>
+                    <div class="col-12 col-md-6 text-md-end small">
+                        <span class="text-muted">Administrador de salud</span>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+</div>
+<script>
+    const sitioSelectSalud = document.getElementById('sitio-select-salud');
+    const semaforoSelectSalud = document.getElementById('semaforo-select-salud');
+    const formFiltros = document.getElementById('form-filtros-salud');
+
+    if (sitioSelectSalud && semaforoSelectSalud && formFiltros) {
+        sitioSelectSalud.addEventListener('change', () => {
+            semaforoSelectSalud.selectedIndex = 0;
+            formFiltros.submit();
+        });
+        semaforoSelectSalud.addEventListener('change', () => {
+            formFiltros.submit();
+        });
+    }
+</script>
+<script src="/js/app.js"></script>
+</body>
+</html>

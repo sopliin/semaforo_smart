@@ -24,7 +24,7 @@ public class DatabaseUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findByUsernameAndEnabledTrue(username)
+        Usuario usuario = usuarioRepository.findWithRolesByUsernameAndEnabledTrue(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado o deshabilitado"));
 
         Collection<? extends GrantedAuthority> authorities = usuario.getRoles().stream()

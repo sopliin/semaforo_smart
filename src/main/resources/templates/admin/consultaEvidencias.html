@@ -30,6 +30,11 @@
                                 <i class="align-middle" data-feather="settings"></i> <span class="align-middle">Gestión Semafórica</span>
                             </a>
                         </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="/admin/salud">
+                                <i class="align-middle" data-feather="activity"></i> <span class="align-middle">Salud del Semáforo</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </nav>
@@ -132,7 +137,8 @@
                                         </thead>
                                         <tbody>
                                             <tr th:each="inf : ${infracciones}">
-                                                <td class="text-nowrap" th:text="${inf.createdat}"></td>
+                                                <td class="text-nowrap"
+                                                    th:text="${inf.createdat != null ? #temporals.format(inf.createdat, 'dd-MM-yyyy HH:mm:ss') : '-'}"></td>
                                                 <td class="fw-semibold" th:text="${inf.placa}"></td>
                                                 <td><span class="badge bg-warning text-dark" th:text="${inf.tipo}"></span></td>
                                                 <td th:text="${inf.sitio != null ? inf.sitio.nombre : 'N/D'}"></td>

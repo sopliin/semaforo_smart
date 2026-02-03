@@ -193,6 +193,11 @@
                             <i class="align-middle" data-feather="settings"></i> <span class="align-middle">Gestión Semafórica</span>
                         </a>
                     </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="/admin/salud">
+                            <i class="align-middle" data-feather="activity"></i> <span class="align-middle">Salud del Semáforo</span>
+                        </a>
+                    </li>
                 </ul>
         </div>
         </nav>
@@ -527,6 +532,18 @@
                 .replace(/[\u0300-\u036f]/g, '');
         }
 
+        function formatearFecha(valor) {
+            if (!valor) {
+                return null;
+            }
+            const fecha = new Date(valor);
+            if (Number.isNaN(fecha.getTime())) {
+                return valor;
+            }
+            const pad = (num) => String(num).padStart(2, '0');
+            return `${pad(fecha.getDate())}-${pad(fecha.getMonth() + 1)}-${fecha.getFullYear()} ${pad(fecha.getHours())}:${pad(fecha.getMinutes())}:${pad(fecha.getSeconds())}`;
+        }
+
         function limpiarAlertasConfig() {
             if (alertaConfigExito) {
                 alertaConfigExito.classList.add('d-none');
@@ -744,7 +761,8 @@
                     throw new Error('Sin datos');
                 }
                 const data = await resp.json();
-                labelTs.textContent = data.ts ? `Actualizado: ${data.ts}` : 'Sincronizando...';
+                const fechaFormato = formatearFecha(data.ts);
+                labelTs.textContent = fechaFormato ? `Actualizado: ${fechaFormato}` : 'Sincronizando...';
                 labelVehiculos.textContent = `Vehículos: ${data.numvehiculos ?? 0}`;
                 labelPeatones.textContent = `Peatones: ${data.numpeatones ?? 0}`;
                 resaltarLuz(data.coloractual);
