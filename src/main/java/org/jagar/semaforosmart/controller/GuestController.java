@@ -22,7 +22,9 @@ public class GuestController {
     }
 
     @GetMapping(value = "/evidencias")
-    public String evidenciasInvitado(@RequestParam(required = false) String placa, Model model) {
+    public String evidenciasInvitado(@RequestParam(required = false) String placa,
+                                     @RequestParam(required = false) String tipo,
+                                     Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated() && !(authentication.getPrincipal() instanceof String)) {
             return "redirect:/admin/evidencias";
@@ -32,16 +34,35 @@ public class GuestController {
 
         try {
             if (placa != null && !placa.isBlank()) {
+                String placaNormalizada = normalizarPlaca(placa);
                 infracciones = infraccionRepository.findByPlacaContainingIgnoreCaseOrderByCreatedatDesc(placa);
+                if (!placaNormalizada.isBlank()) {
+                    infracciones = infracciones.stream()
+                            .filter(inf -> normalizarPlaca(inf.getPlaca()).contains(placaNormalizada))
+                            .toList();
+                }
+                if (tipo != null && !tipo.isBlank()) {
+                    infracciones = infracciones.stream()
+                            .filter(inf -> tipo.equalsIgnoreCase(inf.getTipo()))
+                            .toList();
+                }
             }
         } catch (Exception ex) {
             errorCarga = ex.getMessage();
         }
 
         model.addAttribute("placa", placa);
+        model.addAttribute("tipo", tipo);
         model.addAttribute("infracciones", infracciones);
         model.addAttribute("errorCarga", errorCarga);
         model.addAttribute("modo", "invitado");
         return "invitado/consultaEvidenciasGuest";
+    }
+
+    private String normalizarPlaca(String valor) {
+        if (valor == null) {
+            return "";
+        }
+        return valor.replaceAll("[^A-Za-z0-9]", "").toUpperCase(java.util.Locale.ROOT);
     }
 }

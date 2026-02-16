@@ -67,17 +67,9 @@
                             <span class="badge bg-primary ms-auto">Panel Admin</span>
                         </div>
 
-                        <div class="card shadow-sm mb-4">
-                            <div class="card-header border-bottom-0 pb-0">
-                                <div class="d-flex align-items-center">
-                                    <div>
-                                        <h5 class="card-title mb-0">Filtros</h5>
-                                        <small class="text-muted">Ajusta los parámetros para refinar la búsqueda.</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body pt-3">
-                                <form class="row gy-3 gx-3 align-items-end" method="get" th:action="@{/admin/evidencias}">
+                        <div class="card border-0 bg-transparent mb-3">
+                            <div class="card-body p-0">
+                                <form class="row gy-2 gx-2 align-items-end" method="get" th:action="@{/admin/evidencias}" id="evidencias-filtros">
                                     <div class="col-sm-6 col-lg-3">
                                         <label class="form-label">Fecha desde</label>
                                         <input type="date" name="desde" class="form-control" th:value="${fechaDesde}">
@@ -88,16 +80,12 @@
                                     </div>
                                     <div class="col-sm-6 col-lg-3">
                                         <label class="form-label">Placa</label>
-                                        <input type="text" name="placa" class="form-control" placeholder="ABC123" th:value="${placa}">
-                                    </div>
-                                    <div class="col-sm-6 col-lg-3">
-                                        <label class="form-label">Tipo de infracción</label>
-                                        <input type="text" name="tipo" class="form-control" placeholder="Ej: luz roja" th:value="${tipo}">
+                                        <input type="text" name="placa" id="placa-input" class="form-control" placeholder="ABC123" th:value="${placa}" maxlength="7" autocomplete="off">
                                     </div>
                                     <div class="col-sm-6 col-lg-3">
                                         <label class="form-label">Sitio</label>
                                         <select class="form-select" name="sitioId">
-                                            <option th:value="1" th:selected="${sitioId == null}">Todos</option>
+                                            <option value="" th:selected="${sitioId == null}">Todos</option>
                                             <option
                                                     th:each="sitio : ${sitios}"
                                                     th:value="${sitio.id}"
@@ -105,10 +93,6 @@
                                                     th:text="${sitio.nombre}">
                                             </option>
                                         </select>
-                                    </div>
-                                    <div class="col-sm-12 col-lg-9 d-flex gap-2 justify-content-end">
-                                        <a class="btn btn-outline-secondary" href="/admin/evidencias">Limpiar</a>
-                                        <button class="btn btn-primary" type="submit">Aplicar</button>
                                     </div>
                                 </form>
                             </div>
@@ -127,29 +111,54 @@
                                             <tr>
                                                 <th>Fecha</th>
                                                 <th>Placa</th>
-                                                <th>Tipo</th>
+                                                <th class="position-relative">
+                                                    <button type="button" id="tipo-filter-toggle" class="btn btn-link p-0 text-decoration-none">Tipo</button>
+                                                    <div id="tipo-filter-pop" class="position-absolute bg-white border rounded shadow-sm p-2" style="display:none; min-width: 180px; z-index: 10;">
+                                                        <label class="form-label small text-muted mb-1">Filtrar tipo</label>
+                                                        <select class="form-select form-select-sm" name="tipo" id="tipo-filter-select" form="evidencias-filtros">
+                                                            <option value="" th:selected="${tipo == null || tipo.isBlank()}">Todos</option>
+                                                            <option th:value="luz_roja" th:selected="${tipo != null && tipo.equalsIgnoreCase('luz_roja')}">luz_roja</option>
+                                                            <option th:value="exceso_velocidad" th:selected="${tipo != null && tipo.equalsIgnoreCase('exceso_velocidad')}">exceso_velocidad</option>
+                                                        </select>
+                                                    </div>
+                                                </th>
                                                 <th>Sitio</th>
                                                 <th class="text-center">Velocidad (km/h)</th>
                                                 <th class="text-center">Estado de luz</th>
                                                 <th class="text-center">Imagen</th>
-                                                <th class="text-end">Acciones</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr th:each="inf : ${infracciones}">
                                                 <td class="text-nowrap"
-                                                    th:text="${inf.createdat != null ? #temporals.format(inf.createdat, 'dd-MM-yyyy HH:mm:ss') : '-'}"></td>
+                                                    th:text="${inf.createdat != null ? #temporals.format(inf.createdat, 'd MMM yyyy HH:mm:ss') : '-'}"></td>
                                                 <td class="fw-semibold" th:text="${inf.placa}"></td>
                                                 <td><span class="badge bg-warning text-dark" th:text="${inf.tipo}"></span></td>
-                                                <td th:text="${inf.sitio != null ? inf.sitio.nombre : 'N/D'}"></td>
-                                                <td class="text-center" th:text="${inf.velocidadkmh}"></td>
-                                                <td class="text-center" th:text="${inf.lightstate}"></td>
+                                                <td th:text="${inf.semaforo != null && inf.semaforo.sitio != null ? inf.semaforo.sitio.nombre : 'N/D'}"></td>
+                                                <td class="text-center" th:text="${inf.velocidadkmh != null ? #numbers.formatDecimal(inf.velocidadkmh, 1, 1) : '-'}"></td>
+                                                <td class="text-center"
+                                                    th:with="state=${inf.lightstate != null ? #strings.toUpperCase(inf.lightstate) : ''},
+                                                             label=${state == 'YELLOW' ? 'AMBAR' : (state == 'GREEN' ? 'VERDE' : (state == 'RED' ? 'ROJO' : 'N/D'))},
+                                                             color=${state == 'YELLOW' ? '#ffc107' : (state == 'GREEN' ? '#198754' : (state == 'RED' ? '#dc3545' : '#adb5bd'))}">
+                                                    <span class="d-inline-flex align-items-center gap-2">
+                                                        <span th:text="${label}">N/D</span>
+                                                        <span class="rounded-circle d-inline-block" th:style="'width:10px;height:10px;background:' + ${color} + ';'"></span>
+                                                    </span>
+                                                </td>
                                                 <td class="text-center">
                                                     <img th:if="${inf.fotoprocesada != null and !inf.fotoprocesada.isEmpty()}" th:src="${inf.fotoprocesada}" class="img-fluid rounded shadow-sm" style="max-width: 110px" alt="Evidencia">
                                                     <span th:if="${inf.fotoprocesada == null || inf.fotoprocesada.isEmpty()}" class="text-muted">Sin imagen</span>
-                                                </td>
-                                                <td class="text-end">
-                                                    <a class="btn btn-sm btn-outline-primary" th:href="${inf.fotoprocesada}" target="_blank" th:if="${inf.fotoprocesada != null && !inf.fotoprocesada.isEmpty()}">Descargar</a>
+                                                    <a th:if="${inf.fotoprocesada != null && !inf.fotoprocesada.isEmpty()}"
+                                                       class="btn btn-link btn-sm ms-2 p-0 align-baseline"
+                                                       th:href="${inf.fotoprocesada}"
+                                                       download
+                                                       title="Descargar evidencia"
+                                                       aria-label="Descargar evidencia">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.1A1.5 1.5 0 0 0 2.5 14h11a1.5 1.5 0 0 0 1.5-1.5V10.4a.5.5 0 0 1 1 0v2.1A2.5 2.5 0 0 1 13.5 15h-11A2.5 2.5 0 0 1 0 12.5V10.4a.5.5 0 0 1 .5-.5z"/>
+                                                            <path d="M7.5 1.5a.5.5 0 0 1 1 0v7.293l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 8.793V1.5z"/>
+                                                        </svg>
+                                                    </a>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -175,5 +184,68 @@
             </div>
         </div>
         <script src="/js/app.js"></script>
+        <script>
+            (function () {
+                const form = document.getElementById("evidencias-filtros");
+                if (!form) return;
+                form.querySelectorAll("input, select").forEach((el) => {
+                    el.addEventListener("change", () => form.submit());
+                });
+            })();
+        </script>
+        <script>
+            (function () {
+                const input = document.getElementById("placa-input");
+                const form = document.getElementById("evidencias-filtros");
+                if (!input || !form) return;
+
+                const formatPlaca = (raw) => {
+                    const cleaned = (raw || "").replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
+                    if (cleaned.length <= 3) return cleaned;
+                    return cleaned.slice(0, 3) + "-" + cleaned.slice(3, 6);
+                };
+
+                input.addEventListener("input", () => {
+                    const formatted = formatPlaca(input.value);
+                    if (input.value !== formatted) {
+                        input.value = formatted;
+                    }
+                });
+
+                form.addEventListener("submit", () => {
+                    const cleaned = (input.value || "").replace(/[^a-zA-Z0-9]/g, "");
+                    if (!cleaned) {
+                        input.value = "";
+                    }
+                });
+            })();
+        </script>
+        <script>
+            (function () {
+                const toggle = document.getElementById("tipo-filter-toggle");
+                const pop = document.getElementById("tipo-filter-pop");
+                const select = document.getElementById("tipo-filter-select");
+                const form = document.getElementById("evidencias-filtros");
+                if (!toggle || !pop) return;
+                if (select && form) {
+                    select.addEventListener("change", () => form.submit());
+                }
+
+                const close = () => {
+                    pop.style.display = "none";
+                };
+
+                toggle.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    pop.style.display = pop.style.display === "none" ? "block" : "none";
+                });
+
+                document.addEventListener("click", (e) => {
+                    if (!pop.contains(e.target) && e.target !== toggle) {
+                        close();
+                    }
+                });
+            })();
+        </script>
     </body>
 </html>

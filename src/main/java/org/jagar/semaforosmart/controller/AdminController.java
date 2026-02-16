@@ -50,13 +50,14 @@ public class AdminController {
 
         LocalDate desde = parseFechaTexto(fechaDesde);
         LocalDate hasta = parseFechaTexto(fechaHasta);
+        LocalDate hastaFinal = (fechaHasta == null || fechaHasta.isBlank()) ? LocalDate.now() : hasta;
 
         List<Infraccion> filtradas = infracciones.stream()
                 .sorted(Comparator.comparing(Infraccion::getCreatedat, Comparator.nullsLast(LocalDateTime::compareTo)).reversed())
                 .filter(inf -> filtroPlaca(inf, placa))
                 .filter(inf -> filtroTipo(inf, tipo))
                 .filter(inf -> filtroSitio(inf, sitioId))
-                .filter(inf -> filtroFecha(inf, desde, hasta))
+                .filter(inf -> filtroFecha(inf, desde, hastaFinal))
                 .collect(Collectors.toList());
         model.addAttribute("infracciones", filtradas);
         model.addAttribute("placa", placa);
@@ -80,8 +81,14 @@ public class AdminController {
         if (placa == null || placa.isBlank()){
             return true;
         }
+        String placaNormalizada = normalizarPlaca(placa);
+        if (placaNormalizada.isEmpty()){
+            return true;
+        }
         return Optional.ofNullable(infraccion.getPlaca())
-                .map(p -> p.toLowerCase(Locale.ROOT).contains(placa.toLowerCase(Locale.ROOT)))
+                .map(this::normalizarPlaca)
+                .filter(p -> !p.isEmpty())
+                .map(p -> p.contains(placaNormalizada))
                 .orElse(false);
     }
 
@@ -133,5 +140,13 @@ public class AdminController {
 
     private LocalDate toLocalDate(LocalDateTime valor){
         return valor != null ? valor.toLocalDate() : null;
+    }
+
+    private String normalizarPlaca(String valor) {
+        if (valor == null) {
+            return "";
+        }
+        return valor.replaceAll("[^A-Za-z0-9]", "")
+                .toUpperCase(Locale.ROOT);
     }
 }

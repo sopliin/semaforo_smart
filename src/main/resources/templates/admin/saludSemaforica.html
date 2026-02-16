@@ -239,8 +239,19 @@
                                               th:text="${evento.estado != null ? evento.estado : 'N/D'}"></span>
                                     </td>
                                     <td th:text="${evento.origen != null ? evento.origen : 'N/D'}"></td>
-                                    <td class="text-truncate" style="max-width: 220px;"
-                                        th:text="${evento.detalleJson != null ? evento.detalleJson : '-'}"></td>
+                                    <td class="text-center">
+                                        <button
+                                                th:if="${evento.detalleJson != null && !evento.detalleJson.isBlank()}"
+                                                type="button"
+                                                class="btn btn-link p-0 text-decoration-none"
+                                                th:attr="data-detalle=${evento.detalleJson}"
+                                                onclick="abrirDetalleSalud(this)"
+                                                title="Ver detalle"
+                                                aria-label="Ver detalle">
+                                            <i data-feather="eye"></i>
+                                        </button>
+                                        <span th:if="${evento.detalleJson == null || evento.detalleJson.isBlank()}" class="text-muted">-</span>
+                                    </td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -264,6 +275,17 @@
         </footer>
     </div>
 </div>
+<div id="detalleSaludPopup" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.35); z-index:1200; align-items:center; justify-content:center; padding:16px;">
+    <div id="detalleSaludPopupCard" style="width:min(560px, 100%); max-height:80vh; overflow:auto; background:#fff; border-radius:10px; box-shadow:0 10px 30px rgba(0,0,0,0.25);">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-bottom:1px solid #e9ecef;">
+            <h5 style="margin:0; font-size:1rem;">Detalle del evento</h5>
+            <button id="detalleSaludCerrarBtn" type="button" class="btn btn-sm btn-outline-secondary" aria-label="Cerrar">X</button>
+        </div>
+        <div style="padding:12px 14px;">
+            <div id="detalleSaludContenido" class="small"></div>
+        </div>
+    </div>
+</div>
 <script>
     const sitioSelectSalud = document.getElementById('sitio-select-salud');
     const semaforoSelectSalud = document.getElementById('semaforo-select-salud');
@@ -278,6 +300,111 @@
             formFiltros.submit();
         });
     }
+
+    function aTextoPlanoDetalle(obj) {
+        const lineas = [];
+
+        const recorrer = (valor, prefijo) => {
+            if (valor === null || valor === undefined) {
+                lineas.push(`${prefijo} : -`);
+                return;
+            }
+            if (Array.isArray(valor)) {
+                if (valor.length === 0) {
+                    lineas.push(`${prefijo} : []`);
+                    return;
+                }
+                valor.forEach((item, idx) => {
+                    if (typeof item === 'object' && item !== null) {
+                        recorrer(item, `${prefijo}[${idx}]`);
+                    } else {
+                        lineas.push(`${prefijo}[${idx}] : ${item}`);
+                    }
+                });
+                return;
+            }
+            if (typeof valor === 'object') {
+                const entries = Object.entries(valor);
+                if (entries.length === 0) {
+                    lineas.push(`${prefijo} : vacio`);
+                    return;
+                }
+                entries.forEach(([k, v]) => {
+                    const nuevoPrefijo = prefijo ? `${prefijo}.${k}` : k;
+                    if (typeof v === 'object' && v !== null) {
+                        recorrer(v, nuevoPrefijo);
+                    } else {
+                        lineas.push(`${nuevoPrefijo} : ${v}`);
+                    }
+                });
+                return;
+            }
+            lineas.push(`${prefijo} : ${valor}`);
+        };
+
+        if (typeof obj === 'object' && obj !== null) {
+            recorrer(obj, '');
+        } else {
+            lineas.push(String(obj));
+        }
+
+        return lineas.filter(Boolean);
+    }
+
+    function abrirDetalleSalud(btn) {
+        const raw = btn.getAttribute('data-detalle') || '';
+        const contenedor = document.getElementById('detalleSaludContenido');
+        const popup = document.getElementById('detalleSaludPopup');
+        if (!contenedor || !popup) return;
+
+        let lineas = [];
+        try {
+            const parsed = JSON.parse(raw);
+            lineas = aTextoPlanoDetalle(parsed);
+        } catch (e) {
+            const sinLlaves = raw.replace(/^{\s*|\s*}$/g, '');
+            if (sinLlaves.trim().length > 0) {
+                lineas = sinLlaves.split(',').map(v => v.trim());
+            } else {
+                lineas = ['-'];
+            }
+        }
+
+        contenedor.innerHTML = '';
+        lineas.forEach((linea) => {
+            const fila = document.createElement('div');
+            fila.className = 'mb-1';
+            fila.textContent = linea;
+            contenedor.appendChild(fila);
+        });
+        popup.style.display = 'flex';
+    }
+
+    function cerrarDetalleSaludPopup() {
+        const popup = document.getElementById('detalleSaludPopup');
+        if (!popup) return;
+        popup.style.display = 'none';
+    }
+
+    const detalleSaludPopup = document.getElementById('detalleSaludPopup');
+    const detalleSaludPopupCard = document.getElementById('detalleSaludPopupCard');
+    const detalleSaludCerrarBtn = document.getElementById('detalleSaludCerrarBtn');
+
+    if (detalleSaludCerrarBtn) {
+        detalleSaludCerrarBtn.addEventListener('click', cerrarDetalleSaludPopup);
+    }
+    if (detalleSaludPopup && detalleSaludPopupCard) {
+        detalleSaludPopup.addEventListener('click', (e) => {
+            if (!detalleSaludPopupCard.contains(e.target)) {
+                cerrarDetalleSaludPopup();
+            }
+        });
+    }
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            cerrarDetalleSaludPopup();
+        }
+    });
 </script>
 <script src="/js/app.js"></script>
 </body>
