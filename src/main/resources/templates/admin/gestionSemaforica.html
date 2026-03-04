@@ -553,8 +553,15 @@
             if (Number.isNaN(fecha.getTime())) {
                 return valor;
             }
+            const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
             const pad = (num) => String(num).padStart(2, '0');
-            return `${pad(fecha.getDate())}-${pad(fecha.getMonth() + 1)}-${fecha.getFullYear()} ${pad(fecha.getHours())}:${pad(fecha.getMinutes())}:${pad(fecha.getSeconds())}`;
+            const dia = pad(fecha.getDate());
+            const mes = meses[fecha.getMonth()] || '---';
+            const anio = String(fecha.getFullYear()).slice(-2);
+            const hora = pad(fecha.getHours());
+            const minutos = pad(fecha.getMinutes());
+            const segundos = pad(fecha.getSeconds());
+            return `${dia} ${mes} ${anio} ${hora}:${minutos}:${segundos}`;
         }
 
         function limpiarAlertasConfig() {

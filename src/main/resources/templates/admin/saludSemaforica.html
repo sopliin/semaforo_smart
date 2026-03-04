@@ -153,7 +153,7 @@
                             <div class="card-body">
                                 <h5 class="card-title mb-1">Último evento</h5>
                                 <h6 class="mb-0"
-                                    th:text="${ultimoEvento != null ? #temporals.format(ultimoEvento, 'dd-MM-yyyy HH:mm:ss') : 'Sin registros'}">Sin registros</h6>
+                                    th:text="${ultimoEvento != null ? #temporals.format(ultimoEvento, 'dd MMM yy HH:mm:ss') : 'Sin registros'}">Sin registros</h6>
                                 <small class="text-muted">Marca temporal del evento más reciente</small>
                             </div>
                         </div>
@@ -194,7 +194,7 @@
                                               th:text="${salud.esp32Online ? 'Online' : 'Offline'}">
                                         </span>
                                     </td>
-                                    <td th:text="${salud.tsUpdate != null ? #temporals.format(salud.tsUpdate, 'dd-MM-yyyy HH:mm:ss') : 'Sin actualizar'}"></td>
+                                    <td th:text="${salud.tsUpdate != null ? #temporals.format(salud.tsUpdate, 'dd MMM yy HH:mm:ss') : 'Sin actualizar'}"></td>
                                     <td th:text="${salud.observaciones != null ? salud.observaciones : '-'}"></td>
                                 </tr>
                                 </tbody>
@@ -229,7 +229,7 @@
                                 <tbody>
                                 <tr th:each="evento : ${eventos}">
                                     <td class="text-nowrap"
-                                        th:text="${evento.tsevento != null ? #temporals.format(evento.tsevento, 'dd-MM-yyyy HH:mm:ss') : '-'}"></td>
+                                        th:text="${evento.tsevento != null ? #temporals.format(evento.tsevento, 'dd MMM yy HH:mm:ss') : '-'}"></td>
                                     <td th:text="${evento.semaforo != null ? evento.semaforo.nombre : 'N/D'}"></td>
                                     <td th:text="${evento.semaforo != null && evento.semaforo.sitio != null ? evento.semaforo.sitio.nombre : 'N/D'}"></td>
                                     <td><span class="badge bg-info text-dark" th:text="${evento.categoria}"></span></td>
