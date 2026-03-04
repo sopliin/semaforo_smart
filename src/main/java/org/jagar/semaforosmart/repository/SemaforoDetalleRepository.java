@@ -99,10 +99,25 @@ public class SemaforoDetalleRepository {
     }
 
     private Semaforo resolveSemaforo(Long sitioId) {
-        if (sitioId == null) {
-            return semaforoRepository.findAll().stream().findFirst().orElse(null);
+        List<Semaforo> semaforos = sitioId == null
+                ? semaforoRepository.findAll()
+                : semaforoRepository.findBySitio_Id(sitioId);
+
+        return semaforos.stream()
+                .filter(this::esVehicular)
+                .findFirst()
+                .orElseGet(() -> semaforos.stream().findFirst().orElse(null));
+    }
+
+    private boolean esVehicular(Semaforo semaforo) {
+        if (semaforo == null) {
+            return false;
         }
-        return semaforoRepository.findBySitio_Id(sitioId).stream().findFirst().orElse(null);
+        String tipo = semaforo.getTipo();
+        if (tipo == null || tipo.isBlank()) {
+            return true;
+        }
+        return !tipo.toLowerCase(Locale.ROOT).contains("peaton");
     }
 
     private SemaforoTipo deducirTipo(String tipo){

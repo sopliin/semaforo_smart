@@ -33,4 +33,11 @@ public class ConfiguracionSemaforica {
 
     @Column(name = "createdat")
     private LocalDateTime createdat;
+
+    @PrePersist
+    private void setCreatedAt() {
+        if (createdat == null) {
+            createdat = LocalDateTime.now();
+        }
+    }
 }

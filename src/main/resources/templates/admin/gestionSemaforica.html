@@ -242,7 +242,7 @@
                             <div class="card-header d-flex align-items-center justify-content-between">
                                 <div>
                                     <h5 class="card-title mb-0">Croquis del cruce</h5>
-                                    <small class="text-muted d-block">Haz clic en los íconos de semáforo para editar parámetros</small>
+                                    <small class="text-muted d-block">Haz clic en el semáforo vehicular para editar parámetros</small>
                                     <small class="text-muted" id="resumen-sitio"></small>
                                 </div>
                                 <span class="badge bg-primary" id="badge-resumen">Sincronizado</span>
@@ -761,13 +761,8 @@
         botonesPin.forEach(boton => {
             boton.addEventListener('click', () => {
                 const pin = boton.closest('.semaforo-pin');
-                const id = Number(pin.dataset.semaforoId);
                 if (pin.dataset.pin === 'vehicular') {
                     abrirVentanaConfig();
-                    return;
-                }
-                if (!Number.isNaN(id)) {
-                    mostrarDetalle(id);
                 }
             });
         });
