@@ -22,7 +22,7 @@ public class HomeController {
     public String adminLogin(@RequestParam(value = "error", required = false) String error, Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated() && !(authentication.getPrincipal() instanceof String)) {
-            return "redirect:/admin/evidencias";
+            return "redirect:/admin/inicio";
         }
         if (error != null) {
             model.addAttribute("errorMensaje", "Credenciales inválidas, inténtelo nuvamente.");

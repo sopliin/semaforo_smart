@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Panel de administración - Inicio">
+    <meta name="author" content="Semáforo Smart">
+    <title>Inicio - Semáforo Smart</title>
+    <link rel="shortcut icon" href="/img/icons/jagar.png" />
+    <link href="/css/app.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            display: inline-block;
+            margin-right: 6px;
+        }
+        .status-dot.ok { background: #1fc77a; }
+        .status-dot.warn { background: #f5c542; }
+        .status-dot.down { background: #e65a5a; }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <nav id="sidebar" class="sidebar js-sidebar">
+        <div class="sidebar-content js-simplebar">
+            <a class="sidebar-brand" href="/admin/inicio">
+                <span class="align-middle">Semáforo Smart</span>
+            </a>
+            <ul class="sidebar-nav">
+                <li class="sidebar-item active">
+                    <a class="sidebar-link" href="/admin/inicio">
+                        <i class="align-middle" data-feather="home"></i> <span class="align-middle">Inicio</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="/admin/intersecciones">
+                        <i class="align-middle" data-feather="map-pin"></i> <span class="align-middle">Intersecciones</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="/admin/nodos">
+                        <i class="align-middle" data-feather="cpu"></i> <span class="align-middle">Nodos</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="/admin/historico">
+                        <i class="align-middle" data-feather="bar-chart-2"></i> <span class="align-middle">Histórico</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="/admin/alertas">
+                        <i class="align-middle" data-feather="alert-triangle"></i> <span class="align-middle">Alertas</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="/admin/prueba-en-vivo">
+                        <i class="align-middle" data-feather="video"></i> <span class="align-middle">Prueba en vivo</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main">
+        <nav class="navbar navbar-expand navbar-light navbar-bg">
+            <a class="sidebar-toggle js-sidebar-toggle">
+                <i class="hamburger align-self-center"></i>
+            </a>
+            <div class="navbar-collapse collapse">
+                <div class="ms-auto d-flex align-items-center gap-3">
+                    <span class="d-flex align-items-center text-muted small">
+                        <i class="align-middle" data-feather="home"></i>
+                        <span class="ms-2">Administración</span>
+                    </span>
+                    <form th:action="@{/logout}" method="post" class="mb-0">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button type="submit" class="btn btn-outline-danger btn-sm">Cerrar sesión</button>
+                    </form>
+                </div>
+            </div>
+        </nav>
+
+        <main class="content">
+            <div class="container-fluid p-0">
+                <div class="d-flex align-items-center mb-4">
+                    <div>
+                        <h1 class="h3 mb-1">Inicio</h1>
+                        <div class="text-muted">Resumen general de la red de intersecciones monitoreadas.</div>
+                    </div>
+                    <span class="badge ms-auto"
+                          th:classappend="${estadoGeneral == 'alerta' ? 'bg-danger' : (estadoGeneral == 'parcial' ? 'bg-warning text-dark' : 'bg-success')}"
+                          th:text="${estadoGeneral == 'alerta' ? 'Red en alerta' : (estadoGeneral == 'parcial' ? 'Operación parcial' : 'Red operativa')}">
+                        Estado
+                    </span>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title mb-1">Intersecciones</h5>
+                                <h2 class="mb-0" th:text="${totalIntersecciones}">0</h2>
+                                <small class="text-muted">
+                                    <span th:text="${interseccionesEnAlerta}">0</span> en alerta
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title mb-1">Nodos ojo</h5>
+                                <h2 class="mb-0">
+                                    <span th:text="${nodosOjoOnline}">0</span> / <span th:text="${totalNodosOjo}">0</span>
+                                </h2>
+                                <small class="text-muted">en línea / total</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title mb-1">Nodos cerebro</h5>
+                                <h2 class="mb-0">
+                                    <span th:text="${nodosCerebroOnline}">0</span> / <span th:text="${totalNodosCerebro}">0</span>
+                                </h2>
+                                <small class="text-muted">en línea / total</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title mb-1">Alertas pendientes</h5>
+                                <h2 class="mb-0" th:text="${alertasPendientes}">0</h2>
+                                <small class="text-muted">
+                                    <span th:text="${alertasEnRevision}">0</span> en revisión
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-header border-bottom-0 pb-0">
+                        <h5 class="card-title mb-0">Últimos eventos y alertas</h5>
+                        <small class="text-muted">Eventos más recientes registrados en la plataforma.</small>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(ultimosEventos)}" class="text-muted">
+                            No hay eventos registrados todavía.
+                        </div>
+                        <div class="table-responsive" th:if="${!#lists.isEmpty(ultimosEventos)}">
+                            <table class="table table-striped align-middle">
+                                <thead class="table-light">
+                                <tr>
+                                    <th>Fecha de inicio</th>
+                                    <th>Tipo</th>
+                                    <th>Subtipo</th>
+                                    <th>Severidad</th>
+                                    <th>Estado</th>
+                                    <th>Intersección</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="evento : ${ultimosEventos}">
+                                    <td class="text-nowrap"
+                                        th:text="${evento.tsInicio != null ? #temporals.format(evento.tsInicio, 'dd MMM yy HH:mm') : '-'}"></td>
+                                    <td><span class="badge bg-info text-dark" th:text="${evento.tipo}"></span></td>
+                                    <td th:text="${evento.subtipo}"></td>
+                                    <td>
+                                        <span class="status-dot"
+                                              th:classappend="${evento.severidad == 'critica' or evento.severidad == 'alta' ? 'down' : (evento.severidad == 'media' ? 'warn' : 'ok')}"></span>
+                                        <span th:text="${evento.severidad}"></span>
+                                    </td>
+                                    <td>
+                                        <span class="badge"
+                                              th:classappend="${evento.estado == 'pendiente' ? 'bg-danger' : (evento.estado == 'en_revision' ? 'bg-warning text-dark' : (evento.estado == 'notificada' ? 'bg-info text-dark' : (evento.estado == 'resuelta' ? 'bg-success' : 'bg-secondary')))}"
+                                              th:text="${evento.estado}"></span>
+                                    </td>
+                                    <td th:text="${evento.interseccion != null ? evento.interseccion.nombre : 'N/D'}"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer mt-4">
+            <div class="container-fluid">
+                <div class="row text-muted align-items-center">
+                    <div class="col-12 col-md-6 text-start">
+                        <p class="mb-0">&copy; 2025 Semáforo Smart</p>
+                    </div>
+                    <div class="col-12 col-md-6 text-md-end small">
+                        <span class="text-muted">Panel de monitoreo</span>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+</div>
+<script src="/js/app.js"></script>
+</body>
+</html>

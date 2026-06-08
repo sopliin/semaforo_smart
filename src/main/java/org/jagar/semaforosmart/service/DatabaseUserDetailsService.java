@@ -11,7 +11,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Locale;
 
 @Service
 public class DatabaseUserDetailsService implements UserDetailsService {
@@ -23,19 +24,17 @@ public class DatabaseUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findWithRolesByUsernameAndEnabledTrue(username)
+    public UserDetails loadUserByUsername(String correo) throws UsernameNotFoundException {
+        Usuario usuario = usuarioRepository.findByCorreoAndActivoTrue(correo)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado o deshabilitado"));
 
-        Collection<? extends GrantedAuthority> authorities = usuario.getRoles().stream()
-                .map(rol -> new SimpleGrantedAuthority(rol.getNombre()))
-                .collect(Collectors.toSet()
-        );
+        String rol = usuario.getRol() == null ? "" : usuario.getRol().toUpperCase(Locale.ROOT);
+        Collection<? extends GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + rol));
 
         return new User(
-                usuario.getUsername(),
-                usuario.getPasswordhash(),
-                usuario.isEnabled(),
+                usuario.getCorreo(),
+                usuario.getPasswordHash(),
+                usuario.isActivo(),
                 true,
                 true,
                 true,

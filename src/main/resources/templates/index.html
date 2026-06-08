@@ -13,15 +13,14 @@
             <div class="row align-items-center g-5">
                 <div class="col-lg-7">
                     <span class="badge bg-success mb-3">Semáforo Smart</span>
-                    <h1 class="display-5 fw-bold mb-3">Control y evidencias en un solo lugar</h1>
+                    <h1 class="display-5 fw-bold mb-3">Vista general de la red de intersecciones monitoreadas</h1>
                     <p class="lead text-muted mb-4">
-                        Gestiona el sistema semafórico y revisa las evidencias capturadas desde una interfaz moderna.
-                        Las consultas invitadas siguen disponibles sin credenciales, mientras que el panel de
-                        administración está protegido por inicio de sesión.
+                        Supervisa el estado de las intersecciones, los nodos de sensado e integración (ojo / cerebro),
+                        el histórico de detecciones y las alertas técnicas, viales y de infraestructura desde un
+                        panel centralizado. El acceso está protegido por inicio de sesión.
                     </p>
                     <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
-                        <a class="btn btn-primary btn-lg" href="/admin/login">Iniciar sesión como administrador</a>
-                        <a class="btn btn-outline-secondary btn-lg" href="/invitado/evidencias">Entrar como invitado</a>
+                        <a class="btn btn-primary btn-lg" href="/admin/login">Iniciar sesión</a>
                     </div>
                     <div class="row row-cols-1 row-cols-md-2 g-3">
                         <div class="col">
@@ -33,7 +32,7 @@
                                         </div>
                                         <h6 class="ms-3 mb-0">Sesión segura</h6>
                                     </div>
-                                    <p class="text-muted mb-0">El flujo administrativo exige autenticación antes de acceder a evidencias o gestión.</p>
+                                    <p class="text-muted mb-0">El panel de monitoreo exige autenticación antes de acceder a intersecciones, nodos, histórico y alertas.</p>
                                 </div>
                             </div>
                         </div>
@@ -42,11 +41,11 @@
                                 <div class="card-body">
                                     <div class="d-flex align-items-center mb-2">
                                         <div class="rounded-circle bg-success bg-opacity-10 text-success d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
-                                            <i class="align-middle" data-feather="search"></i>
+                                            <i class="align-middle" data-feather="activity"></i>
                                         </div>
-                                        <h6 class="ms-3 mb-0">Consultas rápidas</h6>
+                                        <h6 class="ms-3 mb-0">Monitoreo en tiempo real</h6>
                                     </div>
-                                    <p class="text-muted mb-0">Busca evidencias por placa sin iniciar sesión con el modo invitado.</p>
+                                    <p class="text-muted mb-0">Diagnóstico de nodos, detecciones recientes y alertas listas para revisión del operador.</p>
                                 </div>
                             </div>
                         </div>
@@ -65,15 +64,15 @@
                                         <i class="align-middle" data-feather="shield"></i>
                                     </div>
                                     <div class="ms-3">
-                                        <h4 class="mb-0">Acceso administrador</h4>
-                                        <small class="text-muted">Consulta evidencias y gestiona la semaforización.</small>
+                                        <h4 class="mb-0">Acceso al panel</h4>
+                                        <small class="text-muted">Monitorea intersecciones, nodos, histórico y alertas.</small>
                                     </div>
                                 </div>
                                 <form class="row g-3" method="post" th:action="@{/admin/login}">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                                     <div class="col-12">
-                                        <label class="form-label">Usuario</label>
-                                        <input type="text" name="username" class="form-control" placeholder="admin" required>
+                                        <label class="form-label">Correo electrónico</label>
+                                        <input type="email" name="username" class="form-control" placeholder="admin@jagar.org" required>
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label">Contraseña</label>
@@ -84,18 +83,6 @@
                                     </div>
                                 </form>
                                 <div class="alert alert-danger mt-3" th:if="${errorMensaje != null}" th:text="${errorMensaje}"></div>
-                                <div class="mt-4 p-3 bg-light rounded border">
-                                    <div class="d-flex align-items-center">
-                                        <div class="rounded-circle bg-success bg-opacity-25 text-success d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                                            <i class="align-middle" data-feather="users"></i>
-                                        </div>
-                                        <div class="ms-3">
-                                            <div class="fw-semibold">Ingreso como invitado</div>
-                                            <p class="text-muted small mb-1">Busca evidencias por placa sin requerir credenciales.</p>
-                                            <a class="btn btn-outline-success btn-sm" href="/invitado/evidencias">Consultar como invitado</a>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
